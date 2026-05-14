@@ -43,28 +43,8 @@ int check_extension(char *str)
     return (0);
 }
 
-/*
-    FUNCIÓN parser_main(archivo, data):
-    1. ABRIR archivo (fd).
-    2. SI error al abrir:
-       RETORNAR print_error("No se pudo abrir el archivo").
+// parser_main hace el open y un while con readline
 
-    3. MIENTRAS (linea = get_next_line(fd)) no sea NULL:
-       SI linea no es solo un salto de línea Y el mapa NO ha empezado:
-          - Quitar espacios en blanco al principio y final de la linea (trim).
-
-       RESULTADO = llamar a parse_line(linea, data).
-
-       LIBERAR(linea).
-       SI RESULTADO es ERROR:
-          CERRAR(fd) y RETORNAR ERROR.
-
-    4. CERRAR(fd).
-    5. SI al terminar falta alguna textura o color:
-       RETORNAR print_error("Información incompleta").
-
-    RETORNAR SUCCESS.
-*/
 int parser_main(char *map_file, t_data *data)
 {
     char *line;
@@ -103,43 +83,7 @@ int parser_main(char *map_file, t_data *data)
     return (0);
 }
 
-/*
-    FUNCIÓN parse_line(linea, data):
-    1. i = 0
-    2. SALTAR espacios y tabuladores (while linea[i] == ' ' ...)
-
-    3. SI linea[i] es el final ('\0' o '\n'):
-       SI data->map_started == TRUE:
-          RETORNAR print_error("Línea vacía dentro del mapa")
-       RETORNAR SUCCESS
-
-    4. get_texture() function
-        SI empieza por "NO ", "SO ", "WE " o "EA ":
-        if (ft_strncmp(&line[i], "NO ", 3) == 0)
-            return (get_texture_path(&line[i], &data->tex_no, data));
-       SI handle_texture(&linea[i], data) == SUCCESS:
-          data->count_configs++  # <--- AQUÍ SUMAMOS
-          RETORNAR SUCCESS
-       SINO:
-          RETORNAR ERROR
-
-    5. get_color() function
-        SI empieza por "F " o "C ":
-       SI handle_color(&linea[i], data) == SUCCESS:
-          data->count_configs++  # <--- AQUÍ SUMAMOS
-          RETORNAR SUCCESS
-       SINO:
-          RETORNAR ERROR
-
-    6. SI la línea parece mapa (contiene '1' o '0'):
-       SI data->count_configs < 6:
-          RETORNAR print_error("Mapa detectado antes de completar la configuración")
-
-       data->map_started = TRUE
-       RETORNAR save_map_line(linea, data) # Pasamos 'linea' original, no con 'i'
-
-    7. RETORNAR print_error("Elemento desconocido en el archivo")
-*/
+// parser_line decide si es textura, color o mapa
 
 int parser_line(char *line, t_data *data)
 {

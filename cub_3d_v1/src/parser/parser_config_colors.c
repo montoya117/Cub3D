@@ -21,35 +21,6 @@
 •	Fórmula: (R << 16) | (G << 8) | B.
 */
 
-/*  
-
-    FUNCION handle_color(linea_original, data):
-    1. DECLARAR target (un puntero a entero)
-    2. DECLARAR rgb_array (un array de strings, resultado del split)
-    3. DECLARAR linea_limpia (un string)
-
-    4. SI la linea empieza por 'F':
-          target = dirección de data->color_f
-       SINO SI la linea empieza por 'C':
-          target = dirección de data->color_c
-
-    5. SI el valor en (*target) NO es -1:
-          RETORNAR Error("Color duplicado")
-
-    6. linea_limpia = ft_strtrim(linea_original desde la pos 1, " \n\t")
-    
-    7. rgb_array = ft_split(linea_limpia, ',')
-    8. LIBERAR(linea_limpia)  // Ya no la necesitamos
-
-    9. SI validar_y_guardar(rgb_array, target) es ERROR:
-          LIBERAR_ARRAY(rgb_array)
-          RETORNAR ERROR
-
-    10. LIBERAR_ARRAY(rgb_array) // Éxito, pero hay que limpiar igual
-    11. data->config_count++
-    12. RETORNAR SUCCESS
-*/
-
 int handle_color(char *line, t_data *data)
 {
     int     *target; // puntero a puntero para editar t_data->color
@@ -85,29 +56,8 @@ int handle_color(char *line, t_data *data)
     return (0);
 }
 
-/*  asegura que el usuario no meta basura
-
-    FUNCION validar_y_guardar(rgb_array, target):
-    1. SI rgb_array no tiene exactamente 3 elementos:
-          RETORNAR Error("Faltan o sobran valores")
-
-    2. PARA cada uno de los 3 elementos (R, G, B):
-          SI el elemento tiene caracteres que NO son dígitos:
-             RETORNAR Error("No es un número")
-          
-          valor = ft_atoi(elemento)
-          
-          SI valor < 0 O valor > 255:
-             RETORNAR Error("Fuera de rango 0-255")
-
-    3. r = ft_atoi(rgb_array[0])
-    4. g = ft_atoi(rgb_array[1])
-    5. b = ft_atoi(rgb_array[2])
-
-    6. // Guardar en formato hexadecimal para la MLX
-       *target = (r << 16) | (g << 8) | b
-       
-    7. RETORNAR SUCCESS
+/*  
+    asegura que el usuario no meta basura
 */
 
 int validate_rgb(char **rgb, int *target)
