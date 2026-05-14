@@ -23,8 +23,10 @@ MLX_FLAGS   = -L$(MLX_DIR) -lmlx -framework OpenGL -framework AppKit
 # Source files
 SRCS        = 	$(SRC_DIR)/parser/parser.c \
 				$(SRC_DIR)/parser/parser_map.c \
-				$(SRC_DIR)/parser/parser_config.c \
+				$(SRC_DIR)/parser/parser_config_textures.c \
+				$(SRC_DIR)/parser/parser_config_colors.c \
 				$(SRC_DIR)/parser/init.c \
+				$(SRC_DIR)/utils/utils_parser.c \
 				$(SRC_DIR)/utils/error.c \
               	$(SRC_DIR)/gnl/get_next_line.c \
 			  	$(SRC_DIR)/main.c

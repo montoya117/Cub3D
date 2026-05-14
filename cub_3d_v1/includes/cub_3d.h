@@ -59,9 +59,21 @@ int     check_extension(char *str);
 int     parser_main(char *map_file, t_data *data);
 int     parser_line(char *line, t_data *data);
 
-// ** UTILS **
+// ** PARSE_CONF_TEXTURES.C **
+int     handle_texture(char *line, t_data *data);
 
-int    print_error(char *str);
+// ** PARSE_CONF_COLORS.C **
+int     handle_color(char *line, t_data *data);
+int     validate_rgb(char **rgb, int *target);
+
+// ** UTILS **
+// ** UTILS_PARSER.C **
+int     is_str_digit(char *str);
+
+// ** ERROR.C **
+int     print_error(char *str);
+void    free_array(char **array);
+void	free_data(t_data *data);
 
 // ** GNL **
 char	*get_next_line(int fd);

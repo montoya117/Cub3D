@@ -22,7 +22,18 @@ int main(int argc, char *argv[])
     init_data(&data);
     // parser
     if (parser_main(map_file, &data) != 0)
+    {
+        free_data(&data);
         return (1);
-    printf("Let's go! Map i good!\n");
+    }
+    printf("Let's go! Config is good!\n");
+    printf("--- DEBUG DATA ---\n");
+    printf("NO: %s | SO: %s\n", data.tex_no, data.tex_so);
+    printf("WE: %s | EA: %s\n", data.tex_we, data.tex_ea);
+    printf("Floor: %d | Ceiling: %d\n", data.color_f, data.color_c);
+    printf("Config count: %d/6\n", data.config_count);
+    printf("------------------\n");
+
+    free_data(&data);
     return (0);
 }

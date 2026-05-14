@@ -18,7 +18,12 @@ static char	*read_and_append(int fd, char *stash)
 	char	*temp;
 	ssize_t	bytes_read;
 
-	while (!stash || !(ft_strchr(stash, '\n')))
+	if (!stash)
+		stash = ft_strdup("");
+	if (!stash)
+		stash = NULL;
+	bytes_read = 1;
+	while (!(ft_strchr(stash, '\n')) && bytes_read != 0)
 	{
 		bytes_read = read(fd, buffer, BUFFER_SIZE);
 		if (bytes_read < 0)
@@ -30,12 +35,10 @@ static char	*read_and_append(int fd, char *stash)
 			break ;
 		buffer[bytes_read] = '\0';
 		temp = ft_strjoin(stash, buffer);
-		if (!temp)
-		{
-			free(stash);
-			return (NULL);
-		}
+		free(stash);
 		stash = temp;
+		if (!stash)
+			return (NULL);
 	}
 	return (stash);
 }
