@@ -63,13 +63,17 @@ typedef struct s_data
     int         color_c;
     int         config_count;
     int         map_started; // map flag
+    t_list      *map_list; //map antes de pasar a grid !!NUEVO
     t_player    player;
     t_map       map;
     t_mlx       mlx;
 } t_data;
 
-
-
+typedef struct s_map_node
+{
+    char                *line;
+    struct s_map_node   *next;    
+}   t_map_node;
 
 // ** FUNCTIONS **s
 
@@ -89,6 +93,10 @@ int     handle_texture(char *line, t_data *data);
 // ** PARSE_CONF_COLORS.C **
 int     handle_color(char *line, t_data *data);
 int     validate_rgb(char **rgb, int *target);
+
+// ** PARSE_MAP.C **
+int     is_map_line(char *line);
+int     save_map_line(char *clean_line, t_data *data);
 
 // ** UTILS **
 // ** UTILS_PARSER.C **

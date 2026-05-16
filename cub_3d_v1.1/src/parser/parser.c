@@ -20,6 +20,23 @@ C 225,30,0
 10000000000000000001
 10000000000000000001
 11111111111111111111
+
+parser_main()
+   │
+   ├── [Lectura con GNL y save_map_line]
+   │
+   ├── convert_list_to_array()  <-- Creamos la matriz char **grid
+   │
+   └── validate_map_data()      <-- Tu función principal de validación
+          │
+          ├── check_elements()  <-- ¿Están las 4 texturas y 2 colores?
+          │
+          ├── check_player()    <-- ¿Hay un solo jugador? (Y guardas su posición)
+          │
+          └── check_walls()     <-- Aquí empieza la magia de los muros
+                 │
+                 └── flood_fill()  <-- El algoritmo recursivo busca fugas
+
 */
 
 /*

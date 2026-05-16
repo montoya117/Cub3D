@@ -25,6 +25,7 @@ void    init_data(t_data *data)
     data->color_c = -1;
     data->config_count = 0;
     data->map_started = 0;
+    data->map_list = NULL;
 
     init_map(&data->map);
     init_player(&data->player);
