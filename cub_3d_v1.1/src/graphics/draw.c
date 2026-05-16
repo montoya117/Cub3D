@@ -9,7 +9,15 @@ void    draw(t_data *data)
     //ya anyadiremos mas cosas !! :3
 
         // ----------- Prueba: columna vertical -----------
-    double dir_angle = data->player.dir; // dirección actual del jugador (en radianes)
+    double dir_angle;
+    if (data->player.dir == 'N')
+        dir_angle = M_PI / 2;
+    else if (data->player.dir == 'S')
+        dir_angle = 3 * M_PI / 2;
+    else if (data->player.dir == 'E')
+        dir_angle = 0;
+    else if (data->player.dir == 'O' || data->player.dir == 'W')
+        dir_angle = M_PI; // dirección actual del jugador (en radianes)
 
     for (int x = 0; x < WIN_W; x++)
     {
