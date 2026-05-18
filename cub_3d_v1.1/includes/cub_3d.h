@@ -96,7 +96,8 @@ int     validate_rgb(char **rgb, int *target);
 
 // ** PARSE_MAP.C **
 int     is_map_line(char *line);
-int     save_map_line(char *clean_line, t_data *data);
+int     save_map_line(char *valid_line, t_data *data);
+int     convert_list_to_array(t_data *data);
 
 // ** UTILS **
 // ** UTILS_PARSER.C **

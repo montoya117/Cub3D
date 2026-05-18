@@ -123,13 +123,11 @@ int parser_line(char *line, t_data *data)
     if ((line[i] == 'F' || line[i] == 'C') && (line[i + 1] == ' ' || line[i + 1] == '\t'))
         return (handle_color(&line[i], data));
     // es mapa?
-    if (line[i] == '0' || line[i] == '1')
+    if (is_map_line(line))
     {
         if (data->config_count < 6)
             return (print_error("Mapa detectado antes de completar la configuración"));
-        return (0);
-            //data->map_started = 1;
-        //return (save_map_line(line, data)); // TODO!
+        return (save_map_line(line, data));
     }
     return (print_error("Elemento desconocido en el archivo"));
 }

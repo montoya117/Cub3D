@@ -1,6 +1,7 @@
 
 #include "cub_3d.h"
 
+/*
 void hardcodear_mapa(t_data *data)
 {
     // Tamaño del mapa
@@ -26,7 +27,7 @@ void hardcodear_mapa(t_data *data)
     data->player.pos_y = 3;
     data->player.dir = 'N';
 }
-
+*/
 int main(int argc, char *argv[])
 {
     t_data  data;
@@ -47,7 +48,7 @@ int main(int argc, char *argv[])
     // data_init
     init_data(&data);
     //mientras no
-    hardcodear_mapa(&data);
+    //hardcodear_mapa(&data);
     // parser
     if (parser_main(map_file, &data) != 0)
     {
@@ -55,7 +56,10 @@ int main(int argc, char *argv[])
         return (1);
     }
 
-    
+    // -------------------------------------------------------------
+    // ¡FUNCIÓN DE VALIDAR EL MAPA (Flood Fill, etc.)!
+    // -------------------------------------------------------------
+
     // DEBUGG
     printf("Let's go! Config is good!\n");
     printf("--- DEBUG DATA ---\n");
@@ -64,12 +68,21 @@ int main(int argc, char *argv[])
     printf("Floor: %d | Ceiling: %d\n", data.color_f, data.color_c);
     printf("Config count: %d/6\n", data.config_count);
     printf("------------------\n");
-    printf("Mapa: %d x %d\n", data.map.width, data.map.height);
-    for (int y = 0; y < data.map.height; y++)
-    printf("|%s|\n", data.map.grid[y]);
-    printf("Player en (%f, %f)\n", data.player.pos_x, data.player.pos_y);
+    printf("Mapa real cargado desde archivo: %d x %d\n", data.map.width, data.map.height);
 
-
+    // MAP DEBUG
+    int y;
+    if (data.map.grid)
+    {
+        y = 0;
+        // Avanza solo mientras la línea exista. Si encuentra el NULL del final, se para de forma segura.
+        while (data.map.grid[y] != NULL) 
+        {
+            printf("|%s|\n", data.map.grid[y]);
+            y++;
+        }
+    }
+    /*
     // init graphics
     if (!init_graphics(&data))
     {
@@ -79,6 +92,7 @@ int main(int argc, char *argv[])
     }
     mlx_loop_hook(data.mlx.mlx_ptr, render, &data);
     mlx_loop(data.mlx.mlx_ptr);
+    */
     free_data(&data);
     return (0);
 }

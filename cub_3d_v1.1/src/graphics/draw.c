@@ -1,15 +1,25 @@
 
 #include "cub_3d.h"
 #include <math.h>
-#define FOV (M_PI / 3)   // 60 grados
+#define FOV (M_PI / 3) // 60 grados
 
-void    draw(t_data *data)
+void draw(t_data *data)
 {
     draw_minimap_buffer(data);
-    //ya anyadiremos mas cosas !! :3
+    // ya anyadiremos mas cosas !! :3
 
-        // ----------- Prueba: columna vertical -----------
+    // ----------- Prueba: columna vertical -----------
     double dir_angle = data->player.dir; // dirección actual del jugador (en radianes)
+    if (data->player.dir == 'E')
+        dir_angle = 0.0;
+    else if (data->player.dir == 'S')
+        dir_angle = M_PI / 2;
+    else if (data->player.dir == 'W')
+        dir_angle = M_PI;
+    else if (data->player.dir == 'N')
+        dir_angle = 3 * M_PI / 2;
+    else
+        dir_angle = 0.0;
 
     for (int x = 0; x < WIN_W; x++)
     {
@@ -21,8 +31,8 @@ void    draw(t_data *data)
         double dir_y = sin(ray_angle);
 
         // Posición inicial del rayo (centro del jugador)
-        double ray_x = data->player.pos_x + 0.5;
-        double ray_y = data->player.pos_y + 0.5;
+        double ray_x = data->player.pos_x;
+        double ray_y = data->player.pos_y;
 
         // Lanza el rayo paso a paso hasta chocar con un muro
         double dist = 0.0, step = 0.01;
@@ -34,7 +44,9 @@ void    draw(t_data *data)
             dist += step;
             int map_x = (int)ray_x;
             int map_y = (int)ray_y;
-            if (data->map.grid[map_y][map_x] == '1')
+            if(map_y < 0 || map_y >= data->map.height || map_x < 0 || map_x >= (int)ft_strlen(data->map.grid[map_y]))
+                hit = 1; // Detiene el rayo si se sale de la matriz
+            else if (data->map.grid[map_y][map_x] == '1')
                 hit = 1;
         }
 

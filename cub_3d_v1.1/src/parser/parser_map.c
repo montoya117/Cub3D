@@ -70,13 +70,14 @@ FUNCIÓN save_map_line(linea_limpia, data):
 
     RETORNAR (0) // Éxito
 */
-int save_map_line(char *clean_line, t_data *data)
+int save_map_line(char *valid_line, t_data *data)
 {
     char    *line_copy;
     t_list  *new_node;
+    int     len;
     
     data->map_started = 1;
-    line_copy = ft_strdup(clean_line);
+    line_copy = ft_strdup(valid_line);
     if (!line_copy)
         return (print_error("Malloc error in map"));
     new_node = ft_lstnew(line_copy);
@@ -87,6 +88,10 @@ int save_map_line(char *clean_line, t_data *data)
     }
     ft_lstadd_back(&(data->map_list), new_node);
     data->map.height++;
+    len = ft_strlen(valid_line);
+    if (len > data->map.width)
+        data->map.width = len;
+    
     return (0);
 }
 
@@ -121,7 +126,41 @@ FUNCIÓN convert_list_to_array(data):
 
     RETORNAR (0) // Éxito. Ahora data->map.grid tiene todo tu mapa listo.
 
+*/
+int convert_list_to_array(t_data *data)
+{
+    int     i;
+    t_list  *current_node;
+    t_list  *tmp_node;
+    
+    // checks
+    if (data->map_list == NULL || data->map.height == 0)
+        return (print_error("Fichero sin mapa"));
+    // resevo memeoria para grid
+    data->map.grid = malloc((data->map.height + 1) * sizeof(char *));
+    if (!data->map.grid)
+        return (print_error("Malloc error en map.grid"));
+    current_node = data->map_list;
+    i = 0;
+    while (current_node != NULL)
+    {
+        data->map.grid[i] = (char *)current_node->content;
+        current_node = current_node->next;
+        i++;
+    }
+    data->map.grid[i] = NULL;
+    current_node = data->map_list;
+    while (current_node != NULL)
+    {
+        tmp_node = current_node;
+        current_node = current_node->next;
+        free(tmp_node);
+    }
+    data->map_list = NULL;
+    return (0);
+}
 
+/*
 Siguiente Paso Técnico a tener en cuenta:
 Fíjate en este detalle de tu parser_line:
 if (line[i] == '\0' || line[i] == '\n')
