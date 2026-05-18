@@ -161,18 +161,6 @@ FUNCIÓN flood_fill(temp_grid, x, y, data):
         RETORNAR (1) // Si cualquiera de las direcciones encuentra una fuga, arrastra el error hacia arriba
 
     RETORNAR (0) // Todo este sector está cerrado
-
-5. Las utilidades de matrices (Gestión del Heap)
-Las herramientas necesarias para que check_walls maneje la memoria sin romper nada.
-FUNCIÓN free_matrix(matrix, height):
-    VARIABLE i = 0
-    SI matrix es NULL:
-        RETORNAR
-
-    MIENTRAS i < height:
-        LIBERAR(matrix[i])
-        i++
-    LIBERAR(matrix)
 */
 
 /*
@@ -198,36 +186,10 @@ FUNCIÓN validate_elements_and_map(data):
 
 int validate_elements_and_map(t_data *data)
 {
-    printf("DEBUG: Testeando elementos...\n");
     if (check_elements(data) != 0)
         return (1);
-    printf("DEBUG: Elementos OK. Testeando jugador...\n");
     if (check_player(data) != 0)
         return (1);
-    printf("DEBUG: ¡Todo OK hasta el bloque 5!\n");
     return (0);
 }
 
-/*
-
-FUNCIÓN duplicate_matrix(src_matrix, height):
-    // Reservamos memoria para los punteros de las filas (+1 para el NULL de cierre)
-    VARIABLE dst_matrix = MALLOC(sizeof(char *) * (height + 1))
-    SI dst_matrix es NULL:
-        RETORNAR (NULL)
-
-    VARIABLE i = 0
-    MIENTRAS i < height:
-        // Duplicamos el string de la fila con tu ft_strdup
-        dst_matrix[i] = ft_strdup(src_matrix[i])
-        
-        // Control defensivo: si falla un malloc intermedio, liberamos lo que llevamos para evitar leaks
-        SI dst_matrix[i] es NULL:
-            free_matrix(dst_matrix, i)
-            RETORNAR (NULL)
-        i++
-
-    dst_matrix[i] = NULL // Cierre seguro de la matriz clonada
-    RETORNAR (dst_matrix)
-
-*/
