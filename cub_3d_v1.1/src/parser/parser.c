@@ -90,13 +90,11 @@ int parser_main(char *map_file, t_data *data)
         }
         free(line);
     }
-    if (data->config_count < 6)
-    {
-        close(fd);
-        print_error("Numero de texturas o colores incorrecto");
-        return (1);
-    }
     close(fd);
+    if (data->config_count < 6)
+        return (print_error("Numero de texturas o colores incorrecto"));
+    if (convert_list_to_array(data) != 0)
+        return (1); 
     return (0);
 }
 
@@ -113,7 +111,7 @@ int parser_line(char *line, t_data *data)
     if (line[i] == '\0' || line[i] == '\n')
     {
         if (data->map_started == 1)
-            print_error("Linea vacia dentro del mapa");
+            return (print_error("Linea vacia dentro del mapa"));
         return (0);
     }
     // intentar texturas
@@ -125,6 +123,7 @@ int parser_line(char *line, t_data *data)
     // es mapa?
     if (is_map_line(line))
     {
+        data->map_started = 1;
         if (data->config_count < 6)
             return (print_error("Mapa detectado antes de completar la configuración"));
         return (save_map_line(line, data));

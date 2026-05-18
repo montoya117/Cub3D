@@ -99,6 +99,12 @@ int     is_map_line(char *line);
 int     save_map_line(char *valid_line, t_data *data);
 int     convert_list_to_array(t_data *data);
 
+// ** VALIDATE.C **
+int     check_elements(t_data *data);
+int     check_player(t_data *data);
+int     validate_elements_and_map(t_data *data);
+
+
 // ** UTILS **
 // ** UTILS_PARSER.C **
 int     is_str_digit(char *str);

@@ -55,20 +55,30 @@ int main(int argc, char *argv[])
         free_data(&data);
         return (1);
     }
+    // validate 
+    if (validate_elements_and_map(&data) != 0)
+    {
+        free_data(&data);
+        return (1);
+    }
 
     // -------------------------------------------------------------
     // ¡FUNCIÓN DE VALIDAR EL MAPA (Flood Fill, etc.)!
     // -------------------------------------------------------------
 
     // DEBUGG
-    printf("Let's go! Config is good!\n");
-    printf("--- DEBUG DATA ---\n");
+    printf("\nLet's go! ¡Todo el archivo .cub es válido y seguro!\n");
+    printf("--- CONFIG DATA ---\n");
     printf("NO: %s | SO: %s\n", data.tex_no, data.tex_so);
     printf("WE: %s | EA: %s\n", data.tex_we, data.tex_ea);
     printf("Floor: %d | Ceiling: %d\n", data.color_f, data.color_c);
     printf("Config count: %d/6\n", data.config_count);
-    printf("------------------\n");
-    printf("Mapa real cargado desde archivo: %d x %d\n", data.map.width, data.map.height);
+    printf("-------------------\n");
+    printf("--- PLAYER DATA ---\n");
+    printf("Posición inicial centrada: (X: %f, Y: %f)\n", data.player.pos_x, data.player.pos_y);
+    printf("Orientación original: %c\n", data.player.dir);
+    printf("-------------------\n");
+    printf("Mapa real limpio (Ancho máx: %d x Alto: %d):\n", data.map.width, data.map.height);
 
     // MAP DEBUG
     int y;

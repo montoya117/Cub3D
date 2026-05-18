@@ -3,23 +3,6 @@
 
 /*
 
-1. Conector Principal: validate_elements_and_map
-Este es el director de orquesta. Llama a los tres pasos defensivos en orden. Si alguno falla, frena en seco.
-FUNCIÓN validate_elements_and_map(data):
-    // Paso 1: Comprobar configuración global
-    SI check_elements(data) NO ES 0:
-        RETORNAR (1) // Error ya impreso dentro
-
-    // Paso 2: Buscar y configurar jugador
-    SI check_player(data) NO ES 0:
-        RETORNAR (1) // Error ya impreso dentro
-
-    // Paso 3: Validar que los muros estén cerrados
-    SI check_walls(data) NO ES 0:
-        RETORNAR (1) // Error ya impreso dentro
-
-    RETORNAR (0) // ¡Éxito absoluto! Todo el archivo .cub es válido
-
 2. Paso 1: check_elements
 Verifica de forma estricta que no falte ningún parámetro de la configuración inicial.
 FUNCIÓN check_elements(data):
@@ -37,6 +20,19 @@ FUNCIÓN check_elements(data):
         RETORNAR (1)
 
     RETORNAR (0) // Elementos OK
+*/
+int check_elements(t_data *data)
+{
+    if (data->tex_no == NULL || data->tex_so == NULL || data->tex_we == NULL || data->tex_ea == NULL)
+        return(print_error("Faltan identificadores de textura esenciales"));
+    if (data->color_c == -1 || data->color_f == -1)
+        return (print_error("Faltan los colores de techo o suelo"));
+    if (data->config_count != 6)
+        return (print_error("Número de elementos de configuración incorrecto"));
+    return (0);
+}
+
+/*
 
 3. Paso 2: check_player
 Rastrea la matriz completa buscando la letra del jugador para inicializar sus coordenadas y limpiar el mapa.
@@ -72,6 +68,44 @@ FUNCIÓN check_player(data):
         RETORNAR (1)
 
     RETORNAR (0) // Jugador único y guardado correctamente
+*/
+int check_player(t_data *data)
+{
+    int     y;
+    int     x;
+    char    c;
+
+    if (!data->map.grid)
+        return (print_error("No se puede validar el jugador: la matriz del mapa esta vacia"));
+    y = 0;
+    x = 0;
+    while(data->map.grid[y] != NULL)
+    {
+        x = 0;
+        while (data->map.grid[y][x] != '\0')
+        {
+            c = data->map.grid[y][x];
+            if (c == 'N' || c == 'S' || c == 'W' || c == 'E')
+            {
+                if (data->player.dir != '\0')
+                    return (print_error("El mapa contiene múltiples jugadores"));
+                data->player.pos_x = (double)x + 0.5;
+                data->player.pos_y = (double)y + 0.5;
+                data->player.dir = c;
+                // remplazamos dir por un '0' para hacer mapa viable
+                data->map.grid[y][x] = '0';
+            }
+            x++;
+        }
+        y++;
+    }
+    if (data->player.dir == '\0')
+        return (print_error("No se ha encontrado la posición del jugador"));
+    return (0);
+}
+
+
+/*
 
 4. Paso 3: check_walls y el algoritmo de inundación
 Aquí gestionamos el clon del mapa para que la recursividad no destruya tus datos de juego.
@@ -139,6 +173,42 @@ FUNCIÓN free_matrix(matrix, height):
         LIBERAR(matrix[i])
         i++
     LIBERAR(matrix)
+*/
+
+/*
+
+1. Conector Principal: validate_elements_and_map
+Este es el director de orquesta. Llama a los tres pasos defensivos en orden. Si alguno falla, frena en seco.
+FUNCIÓN validate_elements_and_map(data):
+    // Paso 1: Comprobar configuración global
+    SI check_elements(data) NO ES 0:
+        RETORNAR (1) // Error ya impreso dentro
+
+    // Paso 2: Buscar y configurar jugador
+    SI check_player(data) NO ES 0:
+        RETORNAR (1) // Error ya impreso dentro
+
+    // Paso 3: Validar que los muros estén cerrados
+    SI check_walls(data) NO ES 0:
+        RETORNAR (1) // Error ya impreso dentro
+
+    RETORNAR (0) // ¡Éxito absoluto! Todo el archivo .cub es válido
+
+*/
+
+int validate_elements_and_map(t_data *data)
+{
+    printf("DEBUG: Testeando elementos...\n");
+    if (check_elements(data) != 0)
+        return (1);
+    printf("DEBUG: Elementos OK. Testeando jugador...\n");
+    if (check_player(data) != 0)
+        return (1);
+    printf("DEBUG: ¡Todo OK hasta el bloque 5!\n");
+    return (0);
+}
+
+/*
 
 FUNCIÓN duplicate_matrix(src_matrix, height):
     // Reservamos memoria para los punteros de las filas (+1 para el NULL de cierre)
