@@ -102,12 +102,18 @@ int     convert_list_to_array(t_data *data);
 // ** VALIDATE.C **
 int     check_elements(t_data *data);
 int     check_player(t_data *data);
+int     check_walls(t_data *data);
+int     flood_fill(char **tmp_grid, int col, int row, t_data *data);
 int     validate_elements_and_map(t_data *data);
 
 
 // ** UTILS **
 // ** UTILS_PARSER.C **
 int     is_str_digit(char *str);
+
+// ** UTILS_VALIDATEC **
+void    free_matrix(char **matrix, int  height);
+char	**duplicate_matrix(char **src_matrix, int height);
 
 //INIT_GRAPHICS.C
 int init_graphics(t_data *data);

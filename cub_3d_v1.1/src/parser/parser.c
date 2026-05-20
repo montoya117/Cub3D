@@ -73,8 +73,9 @@ int parser_main(char *map_file, t_data *data)
     fd = open(map_file, O_RDONLY);
     if (fd == -1)
     {
-        print_error("No se pudo abrir el archivo");
-        return (1);
+        // ! MIRAR Poblemas de open! mirar man '
+        // TODO
+        return (print_error("No se pudo abrir el archivo"));
     }
     while ((line = get_next_line(fd)) != NULL)
     {

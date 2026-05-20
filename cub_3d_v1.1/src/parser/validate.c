@@ -5,21 +5,6 @@
 
 2. Paso 1: check_elements
 Verifica de forma estricta que no falte ningún parámetro de la configuración inicial.
-FUNCIÓN check_elements(data):
-    SI data->tex_no es NULL O data->tex_so es NULL O 
-       data->tex_we es NULL O data->tex_ea es NULL:
-        IMPRIMIR_ERROR("Faltan identificadores de textura esenciales")
-        RETORNAR (1)
-
-    SI data->color_f es -1 O data->color_c es -1:
-        IMPRIMIR_ERROR("Faltan los colores de techo o suelo")
-        RETORNAR (1)
-
-    SI data->config_count NO ES 6:
-        IMPRIMIR_ERROR("Número de elementos de configuración incorrecto")
-        RETORNAR (1)
-
-    RETORNAR (0) // Elementos OK
 */
 int check_elements(t_data *data)
 {
@@ -36,38 +21,7 @@ int check_elements(t_data *data)
 
 3. Paso 2: check_player
 Rastrea la matriz completa buscando la letra del jugador para inicializar sus coordenadas y limpiar el mapa.
-FUNCIÓN check_player(data):
-    VARIABLE y = 0
-    VARIABLE x = 0
 
-    MIENTRAS data->map.grid[y] NO SEA NULL:
-        x = 0
-        MIENTRAS data->map.grid[y][x] NO SEA '\0':
-            VARIABLE caracter = data->map.grid[y][x]
-            
-            SI caracter es 'N' O caracter es 'S' O caracter es 'E' O caracter es 'W':
-                // Si data->player.dir ya se había rellenado, significa que hay otro jugador
-                SI data->player.dir NO ES '\0':
-                    IMPRIMIR_ERROR("El mapa contiene múltiples jugadores")
-                    RETORNAR (1)
-                
-                // Guardamos la posición sumando 0.5 para centrarlo en la celda
-                data->player.pos_x = x + 0.5
-                data->player.pos_y = y + 0.5
-                data->player.dir = caracter
-                
-                // ¡Crucial! Reemplazamos la letra por un suelo para homogeneizar el mapa
-                data->map.grid[y][x] = '0'
-            
-            x++
-        y++
-
-    // Al salir del bucle completo, si no se encontró orientación, es que no hay jugador
-    SI data->player.dir ES '\0':
-        IMPRIMIR_ERROR("No se ha encontrado la posición del jugador")
-        RETORNAR (1)
-
-    RETORNAR (0) // Jugador único y guardado correctamente
 */
 int check_player(t_data *data)
 {
@@ -85,6 +39,9 @@ int check_player(t_data *data)
         while (data->map.grid[y][x] != '\0')
         {
             c = data->map.grid[y][x];
+            // check cosas que no tocan!
+            if (c != 'N' && c != 'S' && c != 'W' && c != 'E' && c != '0' && c != '1' && c != ' ')
+                return (print_error("El mapa contiene caracteres no permitidos"));
             if (c == 'N' || c == 'S' || c == 'W' || c == 'E')
             {
                 if (data->player.dir != '\0')
@@ -103,85 +60,70 @@ int check_player(t_data *data)
         return (print_error("No se ha encontrado la posición del jugador"));
     return (0);
 }
-
+/*
+    !! MIRAR ✅
+    aprovechar el bucle de check_player (o hacer otra función pequeña) para verificar 
+    que data->map.grid[y][x] sea únicamente un espacio ' ', un muro '1', un suelo '0' o una letra de jugador. 
+    Si encuentras algo ajeno, devuelves error. Si dejas pasar caracteres raros, el raycaster podría volverse loco después.
+*/
 
 /*
 
 4. Paso 3: check_walls y el algoritmo de inundación
 Aquí gestionamos el clon del mapa para que la recursividad no destruya tus datos de juego.
 FUNCIÓN check_walls(data):
-    // Duplicamos el mapa usando la función auxiliar
-    VARIABLE temp_grid = duplicate_matrix(data->map.grid, data->map.height)
-    SI temp_grid es NULL:
-        IMPRIMIR_ERROR("Malloc error al duplicar mapa de validación")
-        RETORNAR (1)
+*/
 
-    // Extraemos la posición entera para el Flood Fill
-    VARIABLE p_x = PARTE_ENTERA(data->player.pos_x)
-    VARIABLE p_y = PARTE_ENTERA(data->player.pos_y)
+int check_walls(t_data *data)
+{
+    char    **tmp_grid;
+    int     is_open; // flag para el return de flood_fill si devuelve 1 el mapa esta mal...
 
-    // Lanzamos la inundación recursiva
-    VARIABLE mapa_abierto = flood_fill(temp_grid, p_x, p_y, data)
+    // Duplicamos el grid del mapa (necesitarás programar tu función auxiliar de clonar matrices)
+    tmp_grid = duplicate_matrix(data->map.grid, data->map.height);
+    if (!tmp_grid)
+        return (print_error("Malloc error al duplicar mapa de validación"));
+    // Lanzamos la inundación desde la posición entera donde estaba el jugador
+    is_open = flood_fill(tmp_grid, (int)data->player.pos_x, (int)data->player.pos_y, data);
+    // Liberamos la matriz temporal pase lo que pase para evitar leaks catastróficos
+    free_matrix(tmp_grid, data->map.height);
+    if (is_open) // si flood fill retorna 1 es error...
+        return (print_error("El mapa está abierto / No está completamente rodeado por muros"));
+    return (0);
+}
 
-    // Liberamos SIEMPRE la matriz clonada inmediatamente para evitar leaks
-    free_matrix(temp_grid, data->map.height)
-
-    SI mapa_abierto ES 1:
-        IMPRIMIR_ERROR("El mapa está abierto / No está rodeado por muros")
-        RETORNAR (1)
-
-    RETORNAR (0) // Muros herméticos
-
+/*
 El motor recursivo: flood_fill
 FUNCIÓN flood_fill(temp_grid, x, y, data):
-    // Caso de error 1: Nos salimos de los límites de la matriz alto/bajo
-    SI y < 0 O y >= data->map.height:
-        RETORNAR (1)
-
-    // Caso de error 2: Nos salimos del límite de longitud de esta fila en concreto
-    SI x < 0 O x >= LONGITUD_STRING(temp_grid[y]):
-        RETORNAR (1)
-
-    // Caso de error 3: Si tocamos un espacio vacío o un fin de línea, el mapa gotea
-    SI temp_grid[y][x] ES ' ' O temp_grid[y][x] ES '\0':
-        RETORNAR (1)
-
-    // Caso base seguro: Si tocamos un muro ('1') o una zona validada ('V'), nos frenamos
-    SI temp_grid[y][x] ES '1' O temp_grid[y][x] ES 'V':
-        RETORNAR (0)
-
-    // Marcamos la celda actual como Visitada ('V')
-    temp_grid[y][x] = 'V'
-
-    // Inundamos recursivamente en cruz (Norte, Sur, Oeste, Este)
-    SI flood_fill(temp_grid, x, y - 1, data) ES 1 O   // Arriba
-       flood_fill(temp_grid, x, y + 1, data) ES 1 O   // Abajo
-       flood_fill(temp_grid, x - 1, y, data) ES 1 O   // Izquierda
-       flood_fill(temp_grid, x + 1, y, data) ES 1:     // Derecha
-        RETORNAR (1) // Si cualquiera de las direcciones encuentra una fuga, arrastra el error hacia arriba
-
-    RETORNAR (0) // Todo este sector está cerrado
+  
 */
+
+int flood_fill(char **tmp_grid, int col, int row, t_data *data)
+{
+    // 1. Si el algoritmo se sale de los límites de la matriz -> El mapa está abierto (Error)
+    if (row < 0 || row >= data->map.height || col < 0 || col >= (int)ft_strlen((tmp_grid[row])))
+        return (1);    
+    // 2. Si la inundación toca un espacio vacío o un fin de línea -> El mapa está abierto (Error)
+    if (tmp_grid[row][col] == ' ' || tmp_grid[row][col] == '\0')
+        return (1);
+    // 3. Si toca un muro ('1') o una zona ya verificada ('V'), el camino está a salvo. Nos detenemos.
+    if (tmp_grid[row][col] == '1' || tmp_grid[row][col] == 'V')
+        return (0);
+    // 4. Marcamos la celda actual como Visitada ('V') para no entrar en bucle infinito
+    tmp_grid[row][col] = 'V';
+    // 5. LLamamos recursivamente flood_fill arriba abajo y a los lados. Si cualquiera se escapa, devuelve 1.
+    if (flood_fill(tmp_grid, col, row -1 , data)
+        || flood_fill(tmp_grid, col + 1, row, data)
+        || flood_fill(tmp_grid, col, row +1, data)
+        || flood_fill(tmp_grid, col - 1,row, data))
+        return (1);
+    return (0);
+}
 
 /*
 
 1. Conector Principal: validate_elements_and_map
 Este es el director de orquesta. Llama a los tres pasos defensivos en orden. Si alguno falla, frena en seco.
-FUNCIÓN validate_elements_and_map(data):
-    // Paso 1: Comprobar configuración global
-    SI check_elements(data) NO ES 0:
-        RETORNAR (1) // Error ya impreso dentro
-
-    // Paso 2: Buscar y configurar jugador
-    SI check_player(data) NO ES 0:
-        RETORNAR (1) // Error ya impreso dentro
-
-    // Paso 3: Validar que los muros estén cerrados
-    SI check_walls(data) NO ES 0:
-        RETORNAR (1) // Error ya impreso dentro
-
-    RETORNAR (0) // ¡Éxito absoluto! Todo el archivo .cub es válido
-
 */
 
 int validate_elements_and_map(t_data *data)
@@ -190,6 +132,7 @@ int validate_elements_and_map(t_data *data)
         return (1);
     if (check_player(data) != 0)
         return (1);
+    if (check_walls(data) != 0)
+        return (1);
     return (0);
 }
-

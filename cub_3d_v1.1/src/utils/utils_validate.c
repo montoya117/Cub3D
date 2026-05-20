@@ -2,36 +2,47 @@
 #include "cub_3d.h"
 
 /*
-5. Las utilidades de matrices (Gestión del Heap)
-Las herramientas necesarias para que check_walls maneje la memoria sin romper nada.
-FUNCIÓN free_matrix(matrix, height):
-    VARIABLE i = 0
-    SI matrix es NULL:
-        RETORNAR
-
-    MIENTRAS i < height:
-        LIBERAR(matrix[i])
-        i++
-    LIBERAR(matrix)
-
-FUNCIÓN duplicate_matrix(src_matrix, height):
-    // Reservamos memoria para los punteros de las filas (+1 para el NULL de cierre)
-    VARIABLE dst_matrix = MALLOC(sizeof(char *) * (height + 1))
-    SI dst_matrix es NULL:
-        RETORNAR (NULL)
-
-    VARIABLE i = 0
-    MIENTRAS i < height:
-        // Duplicamos el string de la fila con tu ft_strdup
-        dst_matrix[i] = ft_strdup(src_matrix[i])
-        
-        // Control defensivo: si falla un malloc intermedio, liberamos lo que llevamos para evitar leaks
-        SI dst_matrix[i] es NULL:
-            free_matrix(dst_matrix, i)
-            RETORNAR (NULL)
-        i++
-
-    dst_matrix[i] = NULL // Cierre seguro de la matriz clonada
-    RETORNAR (dst_matrix)
+	Utilidades de matrices (Gestión del Heap)
 
 */
+void    free_matrix(char **matrix, int  height)
+{
+    int i;
+
+	if (!matrix)
+		return ;
+    i = 0;
+    while (i < height)
+    {
+        free(matrix[i]);
+        i++;
+    }
+    free(matrix);
+}
+
+/*
+FUNCIÓN duplicate_matrix(src_matrix, height):
+*/
+
+char	**duplicate_matrix(char **src_matrix, int height)
+{
+    char    **dest_matrix;
+    int     i;
+
+    dest_matrix = malloc((height + 1 ) * sizeof(char *));
+    if (!dest_matrix)
+        return (NULL);
+    i = 0;
+    while (i < height)
+    {
+        dest_matrix[i] = ft_strdup(src_matrix[i]);
+        if (!dest_matrix[i])
+		{
+			free_matrix(dest_matrix, i);
+			return(NULL);
+		}
+		i++;
+    }
+	dest_matrix[i] = NULL;
+	return (dest_matrix);
+}
