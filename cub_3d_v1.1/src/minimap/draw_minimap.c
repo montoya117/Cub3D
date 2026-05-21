@@ -27,20 +27,39 @@ static void draw_minimap_cell(t_mlx *mlx, int tile, int mx, int my, int color)
 
 static void draw_player_on_minimap(t_data *data, int tile)
 {
-    int px = tile * data->player.pos_x;
-    int py = tile * data->player.pos_y;
-    int dy = -2;
+	int	px;
+	int	py;
+	int	i;
+	int	x;
+	int	y;
+	double	angle;
 
-    while (dy <= 2)
-    {
-        int dx = -2;
-        while (dx <= 2)
-        {
-            buffer_put_pixel(&data->mlx, px + dx, py + dy, 0xFF0000); // rojo
-            dx++;
-        }
-        dy++;
-    }
+	px = (int)(data->player.pos_x * tile);
+	py = (int)(data->player.pos_y * tile);
+	angle = data->player.angle;
+
+	// Barra horizontal
+	i = -4;
+	while (i <= 4)
+	{
+		x = px + cos(angle + M_PI_2) * i;
+		y = py + sin(angle + M_PI_2) * i;
+		if (x >= 0 && x < data->map.width * tile
+			&& y >= 0 && y < data->map.height * tile)
+			buffer_put_pixel(&data->mlx, x, y, 0xFF0000);
+		i++;
+	}
+	// Pata
+	i = 0;
+	while (i <= 7)
+	{
+		x = px + cos(angle) * i;
+		y = py + sin(angle) * i;
+		if (x >= 0 && x < data->map.width * tile
+			&& y >= 0 && y < data->map.height * tile)
+			buffer_put_pixel(&data->mlx, x, y, 0xFF0000);
+		i++;
+	}
 }
 
 void draw_minimap_buffer(t_data *data)
