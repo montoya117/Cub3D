@@ -72,11 +72,7 @@ int parser_main(char *map_file, t_data *data)
     fd = -1;
     fd = open(map_file, O_RDONLY);
     if (fd == -1)
-    {
-        // ! MIRAR Poblemas de open! mirar man '
-        // TODO
-        return (print_error("No se pudo abrir el archivo"));
-    }
+        return (print_error(strerror(errno)));
     while ((line = get_next_line(fd)) != NULL)
     {
         // cambiamos /n por '\0'
@@ -106,7 +102,7 @@ int parser_line(char *line, t_data *data)
     int i;
 
     i = 0;
-    while (line[i] == ' ' || (line[i] > 9 && line[i] < 13))
+    while (line[i] == ' ' || (line[i] >= 9 && line[i] <= 13))
         i++;
 
     if (line[i] == '\0' || line[i] == '\n')
