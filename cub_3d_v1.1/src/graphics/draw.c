@@ -8,8 +8,8 @@ void    draw(t_data *data)
     draw_minimap_buffer(data);
     //ya anyadiremos mas cosas !! :3
 
-        // ----------- Prueba: columna vertical -----------
-    double dir_angle = data->player.dir; // dirección actual del jugador (en radianes)
+        // ----------- PASUSA RAYCAST -----------
+    /*double dir_angle = data->player.dir; // dirección actual del jugador (en radianes)
 
     for (int x = 0; x < WIN_W; x++)
     {
@@ -53,5 +53,5 @@ void    draw(t_data *data)
             if (y >= 0 && y < WIN_H)
                 buffer_put_pixel(&data->mlx, x, y, color);
     }
-    // ------------------------------------------------
+    // ------------------------------------------------*/
 }

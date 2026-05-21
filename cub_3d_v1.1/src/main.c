@@ -12,14 +12,14 @@ void hardcodear_mapa(t_data *data)
         return; // Maneja error si quieres
 
     data->map.grid[0] = ft_strdup("1111111111");
-    data->map.grid[1] = ft_strdup("1000000001");
-    data->map.grid[2] = ft_strdup("10N0000001");
-    data->map.grid[3] = ft_strdup("1000000001");
+    data->map.grid[1] = ft_strdup("1000011001");
+    data->map.grid[2] = ft_strdup("10N0001001");
+    data->map.grid[3] = ft_strdup("1000001001");
     data->map.grid[4] = ft_strdup("1111111111");
     data->map.grid[5] = NULL;
 
     data->map.height = MAP_HEIGHT;
-    data->map.width = 5; // todas las filas son iguales
+    data->map.width = 10; // todas las filas son iguales
 
     // Posición y dirección del jugador (coincide con la 'N' en [2][2])
     data->player.pos_x = 3;
@@ -77,6 +77,7 @@ int main(int argc, char *argv[])
         free_data(&data);
         return (1);
     }
+    mlx_key_hook(data.mlx.win_ptr, handle_keypress, &data);
     mlx_loop_hook(data.mlx.mlx_ptr, render, &data);
     mlx_loop(data.mlx.mlx_ptr);
     free_data(&data);

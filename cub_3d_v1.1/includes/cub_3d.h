@@ -18,6 +18,7 @@
 # include <stdlib.h>
 # include <stdio.h> // printf
 # include <unistd.h>
+# include <math.h>
 #include "../libft/includes/libft.h"
 #include "../minilibx/mlx.h" 
 //libft y minilibx 
@@ -96,6 +97,9 @@ int     is_str_digit(char *str);
 
 //INIT_GRAPHICS.C
 int init_graphics(t_data *data);
+
+//HOOKS
+int	handle_keypress(int keycode, t_data *data);
 //RENDER.C
 int render(t_data *data);
 //DRAW.c

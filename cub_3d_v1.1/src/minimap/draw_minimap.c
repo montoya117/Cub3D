@@ -53,7 +53,8 @@ void draw_minimap_buffer(t_data *data)
     int x;
     char    cell;
     int color;
-    tile = 10;
+    tile = fmin(WIN_W / data->map.width, WIN_H / data->map.height);
+    //tile = 50; mini mapp petit
     y = 0;
     while (y < data->map.height)//recorremos todas las filas desde 0 hasta alto de mapa
     {
@@ -61,13 +62,14 @@ void draw_minimap_buffer(t_data *data)
         while (x < data->map.width)
         {
             cell = data->map.grid[y][x];
-            color = 0xCCCCCC;
-            if (cell == '1')//muro
-                color = 0x333333;
-            else if (cell == '0')
-                color = 0xAAAAAA; // suelo
+            if (cell == '1')
+                color = 0x333333; // pared
+            else if (cell == '0' || cell == 'N' || cell == 'S' || cell == 'E' || cell == 'W')
+                color = 0xAAAAAA; // suelo o jugador encima
             else if (cell == ' ')
-                color = 0x000000; //fueraa mapa
+                 color = 0x000000; // espacio vacío
+            else
+                color = 0xCCCCCC; // por si acaso hay algún otro carácter
             draw_minimap_cell(&data->mlx, tile, x, y, color);//pintamos esa celda en el buffer
             x++;
         }

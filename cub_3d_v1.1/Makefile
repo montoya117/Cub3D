@@ -32,6 +32,7 @@ SRCS        =   $(SRC_DIR)/parser/parser.c \
                 $(SRC_DIR)/graphics/init_graphics.c \
                 $(SRC_DIR)/graphics/render.c \
                 $(SRC_DIR)/graphics/draw.c \
+				$(SRC_DIR)/hooks/handle_key.c \
                 $(SRC_DIR)/graphics/buffer_utils.c \
                 $(SRC_DIR)/minimap/draw_minimap.c \
                 $(SRC_DIR)/utils/error.c \
