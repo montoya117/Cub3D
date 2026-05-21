@@ -51,6 +51,7 @@ typedef struct s_player
     double  pos_x;
     double  pos_y;
     char    dir; // 'N', 'S', 'O', 'E'     
+    double  angle;
 } t_player;
 
 /* Main data struct */
