@@ -124,7 +124,6 @@ int parser_line(char *line, t_data *data)
     // es mapa?
     if (is_map_line(line))
     {
-        data->map_started = 1;
         if (data->config_count < 6)
             return (print_error("Mapa detectado antes de completar la configuración"));
         return (save_map_line(line, data));

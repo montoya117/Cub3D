@@ -50,3 +50,17 @@ void	free_data(t_data *data)
 	if (data->tex_ea)
 		free(data->tex_ea);
 }
+
+// free lista-enlazada
+void    free_map_list(t_list *map_list)
+{
+    t_list  *tmp;
+
+    while (map_list)
+    {
+        tmp = map_list;
+        map_list = map_list->next;
+        free(tmp->content);
+        free(tmp);
+    }
+}

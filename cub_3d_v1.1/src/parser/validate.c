@@ -83,7 +83,7 @@ int check_walls(t_data *data)
     tmp_grid = duplicate_matrix(data->map.grid, data->map.height);
     if (!tmp_grid)
         return (print_error("Malloc error al duplicar mapa de validación"));
-    // Lanzamos la inundación desde la posición entera donde estaba el jugador
+    // Lanzamos la flood_fill desde la posición entera donde estaba el jugador
     is_open = flood_fill(tmp_grid, (int)data->player.pos_x, (int)data->player.pos_y, data);
     // Liberamos la matriz temporal pase lo que pase para evitar leaks catastróficos
     free_matrix(tmp_grid, data->map.height);
@@ -101,7 +101,7 @@ FUNCIÓN flood_fill(temp_grid, x, y, data):
 int flood_fill(char **tmp_grid, int col, int row, t_data *data)
 {
     // 1. Si el algoritmo se sale de los límites de la matriz -> El mapa está abierto (Error)
-    if (row < 0 || row >= data->map.height || col < 0 || col >= (int)ft_strlen((tmp_grid[row])))
+    if (row < 0 || row >= data->map.height || col < 0 || col >= data->map.width)
         return (1);    
     // 2. Si la inundación toca un espacio vacío o un fin de línea -> El mapa está abierto (Error)
     if (tmp_grid[row][col] == ' ' || tmp_grid[row][col] == '\0')

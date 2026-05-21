@@ -62,17 +62,34 @@ int save_map_line(char *valid_line, t_data *data)
 3. Pseudocódigo de convert_list_to_array
 Esta función se ejecuta al terminar el GNL. Transforma la lista enlazada temporal en el char **grid final.
 */
+static void fill_normalized_row(char *dst, char *src, int width)
+{
+    int i;
+
+    i = 0;
+    while (src[i])
+    {
+        dst[i] = src[i];
+        i++;
+    }
+    while (i < width)
+    {
+        dst[i] = ' ';
+        i++;
+    }
+    dst[i] = '\0';
+}
 
 int convert_list_to_array(t_data *data)
 {
     int     i;
+    char    *line;
     t_list  *current_node;
-    t_list  *tmp_node;
     
     // checks
     if (data->map_list == NULL || data->map.height == 0)
         return (print_error("Fichero sin mapa"));
-    // resevo memeoria para grid
+    // reservo memoria para grid
     data->map.grid = malloc((data->map.height + 1) * sizeof(char *));
     if (!data->map.grid)
         return (print_error("Malloc error en map.grid"));
@@ -80,80 +97,27 @@ int convert_list_to_array(t_data *data)
     i = 0;
     while (current_node != NULL)
     {
-        data->map.grid[i] = (char *)current_node->content;
+        data->map.grid[i] = malloc((data->map.width + 1) * sizeof(char));
+        if (!data->map.grid[i])
+        {
+            free_matrix(data->map.grid, i);
+            data->map.grid = NULL;
+            free_map_list(data->map_list);
+            data->map_list = NULL;
+            return (print_error("Malloc error on line width"));
+        }
+        line = (char *)current_node->content;
+        fill_normalized_row(data->map.grid[i], line, data->map.width);
         current_node = current_node->next;
         i++;
     }
     data->map.grid[i] = NULL;
-    current_node = data->map_list;
-    while (current_node != NULL)
-    {
-        tmp_node = current_node;
-        current_node = current_node->next;
-        free(tmp_node);
-    }
+    free_map_list(data->map_list);
     data->map_list = NULL;
     return (0);
 }
 
 /*
-Midiendo el witdh todo el rato??
-int convert_list_to_array(t_data *data)
-{
-    int     i;
-    int     j;
-    t_list  *current_node;
-    t_list  *tmp_node;
-    int     line_len;
-
-    if (data->map_list == NULL || data->map.height == 0)
-        return (print_error("Fichero sin mapa"));
-    
-    // 1. Reservamos la matriz de punteros
-    data->map.grid = malloc((data->map.height + 1) * sizeof(char *));
-    if (!data->map.grid)
-        return (print_error("Malloc error en map.grid"));
-        
-    current_node = data->map_list;
-    i = 0;
-    while (current_node != NULL)
-    {
-        // 2. Reservamos CADA fila con el ANCHO MÁXIMO absoluto del mapa
-        data->map.grid[i] = malloc((data->map.width + 1) * sizeof(char));
-        if (!data->map.grid[i])
-            return (print_error("Malloc error en fila de map.grid"));
-        
-        line_len = ft_strlen((char *)current_node->content);
-        // 3. Copiamos los caracteres que ya existían
-        j = 0;
-        while (j < line_len)
-        {
-            data->map.grid[i][j] = ((char *)current_node->content)[j];
-            j++;
-        }
-        // 4. Rellenamos el resto de la fila con ESPACIOS REALES hasta el ancho máximo
-        while (j < data->map.width)
-        {
-            data->map.grid[i][j] = ' ';
-            j++;
-        }
-        data->map.grid[i][j] = '\0'; // Cierre seguro de la fila homogénea
-        
-        current_node = current_node->next;
-        i++;
-    }
-    data->map.grid[i] = NULL;
-
-    // 5. Limpiamos solo los nodos envoltorio de la lista, sin tocar data->map.grid
-    current_node = data->map_list;
-    while (current_node != NULL)
-    {
-        tmp_node = current_node;
-        current_node = current_node->next;
-        free(tmp_node);
-    }
-    data->map_list = NULL;
-    return (0);
-}
-
+line = (char *)current_node->content;
+fill_normalized_row(data->map.grid[i], line, data->map.width);
 */

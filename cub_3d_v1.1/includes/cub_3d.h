@@ -131,6 +131,7 @@ void draw_minimap_buffer(t_data *data);
 int     print_error(char *str);
 void    free_array(char **array);
 void	free_data(t_data *data);
+void    free_map_list(t_list *map_list);
 
 // ** GNL **
 char	*get_next_line(int fd);
