@@ -1,0 +1,89 @@
+
+#include "cub_3d.h"
+
+#define PLAYER_RADIUS 0.05
+#define KEY_LEFT 65361   // ←
+#define KEY_RIGHT 65363  // →
+#define MOVE_SPEED 0.1   // Ajusta la velocidad a tu gusto
+#define ROT_SPEED 0.10
+
+int is_wall(double x, double y, t_data *data)
+{
+    int ix = (int)x;
+    int iy = (int)y;
+    if (ix < 0 || iy < 0 || ix >= data->map.width || iy >= data->map.height)
+        return 1;
+    char cell = data->map.grid[iy][ix];
+    return (cell != '0'); // true si NO es suelo
+}
+
+// Comprueba esquinas del círculo jugador
+int can_move(double new_x, double new_y, t_data *data)
+{
+    double r;
+    int result;
+
+    r = PLAYER_RADIUS;
+    result =
+        !is_wall(new_x + r, new_y + r, data) &&
+        !is_wall(new_x - r, new_y + r, data) &&
+        !is_wall(new_x + r, new_y - r, data) &&
+        !is_wall(new_x - r, new_y - r, data);
+    return result;
+}
+
+void check_and_move(double new_x, double new_y, t_data *data)
+{
+    if (can_move(new_x, new_y, data)) {
+        data->player.pos_x = new_x;
+        data->player.pos_y = new_y;
+    }
+}
+
+// ---- FUNCIONES SEPARADAS PARA GIRO Y MOVIMIENTO ----
+
+void rotate_player(int keycode, t_data *data)
+{
+    if (keycode == KEY_LEFT)
+        data->player.angle -= ROT_SPEED;
+    else if (keycode == KEY_RIGHT)
+        data->player.angle += ROT_SPEED;
+
+    // Normaliza ángulo
+    if (data->player.angle > M_PI)
+        data->player.angle -= 2 * M_PI;
+    if (data->player.angle < -M_PI)
+        data->player.angle += 2 * M_PI;
+}
+
+void move_player(int keycode, t_data *data)
+{
+    double new_x;
+    double new_y;
+    
+    new_x = data->player.pos_x;
+    new_y= data->player.pos_y;
+
+    // Movimiento relativo a hacia dónde miro (angle)
+    if (keycode == 119)
+    { // 'W': adelante
+        new_x += cos(data->player.angle) * MOVE_SPEED;
+        new_y += sin(data->player.angle) * MOVE_SPEED;
+    }
+    else if (keycode == 115)
+    { // 'S': atrás
+        new_x -= cos(data->player.angle) * MOVE_SPEED;
+        new_y -= sin(data->player.angle) * MOVE_SPEED;
+    }
+    else if (keycode == 97)
+    { // 'A': strafe izquierda
+        new_x += sin(data->player.angle) * MOVE_SPEED;
+        new_y -= cos(data->player.angle) * MOVE_SPEED;
+    }
+    else if (keycode == 100)
+    { // 'D': strafe derecha
+        new_x -= sin(data->player.angle) * MOVE_SPEED;
+        new_y += cos(data->player.angle) * MOVE_SPEED;
+    }
+    check_and_move(new_x, new_y, data);
+}

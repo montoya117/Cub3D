@@ -13,6 +13,14 @@
 # define WIN_H 768  
 #endif
 
+#ifndef M_PI
+# define M_PI 3.14159265358979323846
+#endif
+
+#ifndef M_PI_2
+# define M_PI_2 1.5707963267948966
+#endif
+
 #include <stdio.h>
 # include <fcntl.h>
 # include <stdlib.h>
@@ -101,6 +109,14 @@ int init_graphics(t_data *data);
 
 //HOOKS
 int	handle_keypress(int keycode, t_data *data);
+
+//MOVE
+int is_wall(double x, double y, t_data *data);
+int can_move(double new_x, double new_y, t_data *data);
+void check_and_move(double new_x, double new_y, t_data *data);
+void rotate_player(int keycode, t_data *data);
+void move_player(int keycode, t_data *data);
+
 //RENDER.C
 int render(t_data *data);
 //DRAW.c
