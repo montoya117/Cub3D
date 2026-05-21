@@ -18,6 +18,7 @@
 # include <stdlib.h>
 # include <stdio.h> // printf
 # include <unistd.h>
+# include <string.h> 
 # include <errno.h>
 # include <math.h>
 #include "../libft/includes/libft.h"
@@ -105,9 +106,12 @@ int     convert_list_to_array(t_data *data);
 int     check_elements(t_data *data);
 int     check_player(t_data *data);
 int     check_walls(t_data *data);
-int     flood_fill(char **tmp_grid, int col, int row, t_data *data);
+int     check_all_floors_closed(t_data *data);
 int     validate_elements_and_map(t_data *data);
 
+// ** VALIDATE_HELPERS.C **
+int     is_open_floor(t_data *data, int row, int col);
+int     flood_fill(char **tmp_grid, int col, int row, t_data *data);
 
 // ** UTILS **
 // ** UTILS_PARSER.C **
