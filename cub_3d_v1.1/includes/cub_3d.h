@@ -18,11 +18,8 @@
 # include <stdlib.h>
 # include <stdio.h> // printf
 # include <unistd.h>
-<<<<<<< Updated upstream
-=======
 # include <errno.h>
 # include <math.h>
->>>>>>> Stashed changes
 #include "../libft/includes/libft.h"
 #include "../minilibx/mlx.h" 
 //libft y minilibx 
