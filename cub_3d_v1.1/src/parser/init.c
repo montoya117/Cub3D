@@ -13,6 +13,7 @@ static void init_player(t_player *player)
     player->pos_x = 0;
     player->pos_y = 0;
     player->dir = '\0';
+    player->angle = 0.0;
 }
 
 void    init_data(t_data *data)

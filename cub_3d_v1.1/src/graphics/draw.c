@@ -8,7 +8,7 @@ void draw(t_data *data)
     draw_minimap_buffer(data);
     // ya anyadiremos mas cosas !! :3
 
-    // ----------- Prueba: columna vertical -----------
+   /* // ----------- Prueba: columna vertical -----------
     double dir_angle = data->player.dir; // dirección actual del jugador (en radianes)
     if (data->player.dir == 'E')
         dir_angle = 0.0;
@@ -64,6 +64,6 @@ void draw(t_data *data)
         for (int y = y_start; y < y_end; y++)
             if (y >= 0 && y < WIN_H)
                 buffer_put_pixel(&data->mlx, x, y, color);
-    }
-    // ------------------------------------------------
+    }*/
+    // ------------------------------------------------*/
 }
