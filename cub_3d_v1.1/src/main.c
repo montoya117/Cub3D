@@ -14,7 +14,7 @@ void hardcodear_mapa(t_data *data)
     data->map.grid[0] = ft_strdup("1111111111");
     data->map.grid[1] = ft_strdup("1000011001");
     data->map.grid[2] = ft_strdup("10N0001001");
-    data->map.grid[3] = ft_strdup("1000001001");
+    data->map.grid[3] = ft_strdup("1000000001");
     data->map.grid[4] = ft_strdup("1111111111");
     data->map.grid[5] = NULL;
 

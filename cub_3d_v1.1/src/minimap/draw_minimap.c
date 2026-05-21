@@ -27,13 +27,10 @@ static void draw_minimap_cell(t_mlx *mlx, int tile, int mx, int my, int color)
 
 static void draw_player_on_minimap(t_data *data, int tile)
 {
-    int px;
-    int py;
-    int dy;
+    int px = tile * data->player.pos_x;
+    int py = tile * data->player.pos_y;
+    int dy = -2;
 
-    px = (int)(data->player.pos_x * tile); //usamos data->player pos, como decimal multiplicada x tile para pasar a pixeles del minimap
-    py = (int)(data->player.pos_y* tile);
-    dy = -2;
     while (dy <= 2)
     {
         int dx = -2;
