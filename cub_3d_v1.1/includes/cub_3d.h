@@ -79,6 +79,12 @@ typedef struct s_data
     t_player    player;
     t_map       map;
     t_mlx       mlx;
+    int key_w;
+    int key_a;
+    int key_s;
+    int key_d;
+    int key_left;
+    int key_right;
 } t_data;
 
 typedef struct s_map_node
@@ -135,6 +141,7 @@ int init_graphics(t_data *data);
 
 //HOOKS
 int	handle_keypress(int keycode, t_data *data);
+int handle_keyrelease(int keycode, t_data *data);
 
 //MOVE
 int is_wall(double x, double y, t_data *data);
@@ -142,6 +149,10 @@ int can_move(double new_x, double new_y, t_data *data);
 void check_and_move(double new_x, double new_y, t_data *data);
 void rotate_player(int keycode, t_data *data);
 void move_player(int keycode, t_data *data);
+
+
+//PROCESS_MOVEMENT.C
+void process_movement(t_data *data);
 
 //RENDER.C
 int render(t_data *data);

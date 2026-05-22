@@ -27,7 +27,12 @@ void    init_data(t_data *data)
     data->config_count = 0;
     data->map_started = 0;
     data->map_list = NULL;
-
+    data->key_w = 0;
+    data->key_a = 0;
+    data->key_s = 0;
+    data->key_d = 0;
+    data->key_left = 0;
+    data->key_right = 0;
     init_map(&data->map);
     init_player(&data->player);
 }

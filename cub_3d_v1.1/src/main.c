@@ -100,7 +100,8 @@ int main(int argc, char *argv[])
         free_data(&data);
         return (1);
     }
-    mlx_key_hook(data.mlx.win_ptr, handle_keypress, &data);
+    mlx_hook(data.mlx.win_ptr, 2, 1L<<0, handle_keypress, &data);    // Key pressed
+    mlx_hook(data.mlx.win_ptr, 3, 1L<<1, handle_keyrelease, &data);  // Key released
     mlx_loop_hook(data.mlx.mlx_ptr, render, &data);
     mlx_loop(data.mlx.mlx_ptr);
     
