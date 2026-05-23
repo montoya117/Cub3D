@@ -4,8 +4,8 @@
 #define PLAYER_RADIUS 0.05
 #define KEY_LEFT 65361   // ←
 #define KEY_RIGHT 65363  // →
-#define MOVE_SPEED 0.01   // Ajusta la velocidad 
-#define ROT_SPEED 0.01
+#define MOVE_SPEED 0.04   // Ajusta la velocidad 
+#define ROT_SPEED 0.04
 
 int is_wall(double x, double y, t_data *data)
 {

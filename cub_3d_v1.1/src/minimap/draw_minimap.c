@@ -27,7 +27,7 @@ static void draw_minimap_cell(t_mlx *mlx, int tile, int mx, int my, int color)
 
 static void draw_player_on_minimap(t_data *data, int tile)
 {
-	int	px;//posicion x del centro del jugador 
+	int	px;//posicion x del centro del jugador S
 	int	py;//idem en y
 	int	i;
 	int	x;
@@ -72,8 +72,8 @@ void draw_minimap_buffer(t_data *data)
     int x;
     char    cell;
     int color;
-    tile = fmin(WIN_W / data->map.width, WIN_H / data->map.height);
-    //tile = 50; mini mapp petit
+    //tile = fmin(WIN_W / data->map.width, WIN_H / data->map.height);
+    tile = 10; //mini mapp petit
     y = 0;
     while (y < data->map.height)//recorremos todas las filas desde 0 hasta alto de mapa
     {

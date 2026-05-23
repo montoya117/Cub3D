@@ -64,6 +64,31 @@ typedef struct s_player
     double  angle;
 } t_player;
 
+
+//STRUCTS AUXILIARES PARA DIBUJAR
+typedef struct s_ray
+{
+	double	dir_x;
+	double	dir_y;
+	double	ray_x;
+	double	ray_y;
+	double	step;
+	int		map_x;
+	int		map_y;
+	int		hit;
+}	t_ray;
+
+typedef struct s_col
+{
+	double	percent;
+	double	ray_angle;
+	double	dist;
+	int		line_height;
+	int		y_start;
+	int		y_end;
+	int		y;
+}	t_col;
+
 /* Main data struct */
 typedef struct s_data
 {

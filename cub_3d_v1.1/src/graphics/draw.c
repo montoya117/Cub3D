@@ -3,67 +3,65 @@
 #include <math.h>
 #define FOV (M_PI / 3) // 60 grados
 
+static void	find_ray_hit(t_data *data, double ray_angle, double *dist)
+{
+	t_ray	r;
+
+	r.dir_x = cos(ray_angle);
+	r.dir_y = sin(ray_angle);
+	r.ray_x = data->player.pos_x;
+	r.ray_y = data->player.pos_y;
+	*dist = 0.0;
+	r.step = 0.01;
+	r.hit = 0;
+	while (!r.hit && *dist < 20.0)
+	{
+		r.ray_x += r.dir_x * r.step;
+		r.ray_y += r.dir_y * r.step;
+		*dist += r.step;
+		r.map_x = (int)r.ray_x;
+		r.map_y = (int)r.ray_y;
+		if (r.map_y < 0 || r.map_y >= data->map.height
+			|| r.map_x < 0 || r.map_x >= (int)ft_strlen(data->map.grid[r.map_y]))
+			r.hit = 1;
+		else if (data->map.grid[r.map_y][r.map_x] == '1')
+			r.hit = 1;
+	}
+}
+
+static void draw_column(t_data *data, int x, double dir_angle)
+{
+	t_col	c;
+
+	c.percent = (double)x / (double)WIN_W;
+	c.ray_angle = dir_angle - (FOV / 2) + c.percent * FOV;
+	find_ray_hit(data, c.ray_angle, &c.dist);
+	c.dist = c.dist * cos(c.ray_angle - dir_angle);
+	if (c.dist < 0.00001)
+		c.dist = 0.00001;
+	c.line_height = (int)(WIN_H / c.dist);
+	c.y_start = WIN_H / 2 - c.line_height / 2;
+	c.y_end = WIN_H / 2 + c.line_height / 2;
+	c.y = c.y_start;
+	while (c.y < c.y_end)
+	{
+		if (c.y >= 0 && c.y < WIN_H)
+			buffer_put_pixel(&data->mlx, x, c.y, 0xCCCCCC);
+		c.y++;
+	}
+}
+
 void draw(t_data *data)
 {
-    draw_minimap_buffer(data);
-    // ya anyadiremos mas cosas !! :3
+	int		x;
+	double	dir_angle;
 
-   /* // ----------- Prueba: columna vertical -----------
-    double dir_angle = data->player.dir; // dirección actual del jugador (en radianes)
-    if (data->player.dir == 'E')
-        dir_angle = 0.0;
-    else if (data->player.dir == 'S')
-        dir_angle = M_PI / 2;
-    else if (data->player.dir == 'W')
-        dir_angle = M_PI;
-    else if (data->player.dir == 'N')
-        dir_angle = 3 * M_PI / 2;
-    else
-        dir_angle = 0.0;
-
-    for (int x = 0; x < WIN_W; x++)
-    {
-        double percent = (double)x / (double)WIN_W;
-        double ray_angle = dir_angle - (FOV / 2) + percent * FOV;
-
-        // Dirección del rayo
-        double dir_x = cos(ray_angle);
-        double dir_y = sin(ray_angle);
-
-        // Posición inicial del rayo (centro del jugador)
-        double ray_x = data->player.pos_x;
-        double ray_y = data->player.pos_y;
-
-        // Lanza el rayo paso a paso hasta chocar con un muro
-        double dist = 0.0, step = 0.01;
-        int hit = 0;
-        while (!hit && dist < 20.0)
-        {
-            ray_x += dir_x * step;
-            ray_y += dir_y * step;
-            dist += step;
-            int map_x = (int)ray_x;
-            int map_y = (int)ray_y;
-            if(map_y < 0 || map_y >= data->map.height || map_x < 0 || map_x >= (int)ft_strlen(data->map.grid[map_y]))
-                hit = 1; // Detiene el rayo si se sale de la matriz
-            else if (data->map.grid[map_y][map_x] == '1')
-                hit = 1;
-        }
-
-        // Corrige el efecto "ojos de pez" (fisheye)
-        dist = dist * cos(ray_angle - dir_angle);
-
-        // Altura de la pared en pantalla
-        int line_height = (int)(WIN_H / dist);
-
-        // Dibuja la columna vertical en la pantalla
-        int y_start = WIN_H / 2 - line_height / 2;
-        int y_end = WIN_H / 2 + line_height / 2;
-
-        unsigned int color = 0xCCCCCC; // color pared
-        for (int y = y_start; y < y_end; y++)
-            if (y >= 0 && y < WIN_H)
-                buffer_put_pixel(&data->mlx, x, y, color);
-    }*/
-    // ------------------------------------------------*/
+	dir_angle = data->player.angle;
+	x = 0;
+	while (x < WIN_W)
+	{
+		draw_column(data, x, dir_angle);
+		x++;
+	}
+	draw_minimap_buffer(data);
 }
