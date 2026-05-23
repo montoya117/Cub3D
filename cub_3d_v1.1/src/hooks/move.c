@@ -4,13 +4,16 @@
 #define PLAYER_RADIUS 0.05
 #define KEY_LEFT 65361   // ←
 #define KEY_RIGHT 65363  // →
-#define MOVE_SPEED 0.1   // Ajusta la velocidad a tu gusto
-#define ROT_SPEED 0.10
+#define MOVE_SPEED 0.01   // Ajusta la velocidad 
+#define ROT_SPEED 0.01
 
 int is_wall(double x, double y, t_data *data)
 {
-    int ix = (int)x;
-    int iy = (int)y;
+    int ix;
+    int iy;
+
+    ix = (int)x;
+    iy = (int)y;
     if (ix < 0 || iy < 0 || ix >= data->map.width || iy >= data->map.height)
         return 1;
     char cell = data->map.grid[iy][ix];
@@ -29,7 +32,7 @@ int can_move(double new_x, double new_y, t_data *data)
         !is_wall(new_x - r, new_y + r, data) &&
         !is_wall(new_x + r, new_y - r, data) &&
         !is_wall(new_x - r, new_y - r, data);
-    return result;
+    return (result);
 }
 
 void check_and_move(double new_x, double new_y, t_data *data)
@@ -49,7 +52,7 @@ void rotate_player(int keycode, t_data *data)
     else if (keycode == KEY_RIGHT)
         data->player.angle += ROT_SPEED;
 
-    // Normaliza ángulo
+    // si iel angulo supera pi o -pi, lo reseta para evitar errores
     if (data->player.angle > M_PI)
         data->player.angle -= 2 * M_PI;
     if (data->player.angle < -M_PI)
@@ -64,7 +67,7 @@ void move_player(int keycode, t_data *data)
     new_x = data->player.pos_x;
     new_y= data->player.pos_y;
 
-    // Movimiento relativo a hacia dónde miro (angle)
+    // Movimiento relativo donde miro (angle)
     if (keycode == 119)
     { // 'W': adelante
         new_x += cos(data->player.angle) * MOVE_SPEED;
@@ -87,3 +90,9 @@ void move_player(int keycode, t_data *data)
     }
     check_and_move(new_x, new_y, data);
 }
+/*
+FORMULA UNIVERSAL PARA MOVER ALGO EN UNA DIRECCION EN UN PLANO
+
+    EJE X:  posiicion nueva = posicion vieja + cos(angulo) * velocidad
+    EJE Y:  posicion nueva = pos vieha + sin(angulo) * velocidaad
+*/

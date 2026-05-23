@@ -27,8 +27,8 @@ static void draw_minimap_cell(t_mlx *mlx, int tile, int mx, int my, int color)
 
 static void draw_player_on_minimap(t_data *data, int tile)
 {
-	int	px;
-	int	py;
+	int	px;//posicion x del centro del jugador 
+	int	py;//idem en y
 	int	i;
 	int	x;
 	int	y;
@@ -42,10 +42,13 @@ static void draw_player_on_minimap(t_data *data, int tile)
 	i = -4;
 	while (i <= 4)
 	{
-		x = px + cos(angle + M_PI_2) * i;
-		y = py + sin(angle + M_PI_2) * i;
+
+        //coseno dice cuanto a la derecha
+        //seno cuanto abajo
+		x = px + cos(angle + M_PI_2) * i;//sumamos m_pi_2 xk keremos dibujar en perpendicular de donde miramos
+		y = py + sin(angle + M_PI_2) * i;//x eso para dibujar la pata no lo usaremos
 		if (x >= 0 && x < data->map.width * tile
-			&& y >= 0 && y < data->map.height * tile)
+			&& y >= 0 && y < data->map.height * tile)//check para dibujar
 			buffer_put_pixel(&data->mlx, x, y, 0xFF0000);
 		i++;
 	}
