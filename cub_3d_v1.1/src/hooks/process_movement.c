@@ -4,15 +4,15 @@
 void process_movement(t_data *data)
 {
     if (data->key_w)
-        move_player(119, data);
+        move_player(KEY_W, data);
     if (data->key_a)
-        move_player(97, data);
+        move_player(KEY_A, data);
     if (data->key_s)
-        move_player(115, data);
+        move_player(KEY_S, data);
     if (data->key_d)
-        move_player(100, data);
+        move_player(KEY_D, data);
     if (data->key_left)
-        rotate_player(65361, data);
+        rotate_player(KEY_LEFT, data);
     if (data->key_right)
-        rotate_player(65363, data);
+        rotate_player(KEY_RIGHT, data);
 }

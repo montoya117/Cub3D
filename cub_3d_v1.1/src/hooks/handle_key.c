@@ -1,38 +1,37 @@
 #include "cub_3d.h"
-// ---- FUNCION PRINCIPAL: handle_keypress ----
 
 int	handle_keypress(int keycode, t_data *data)
 {
-    if (keycode == 119) // W
+    if (keycode == KEY_W)
         data->key_w = 1;
-    if (keycode == 97) // A
+    if (keycode == KEY_A)
         data->key_a = 1;
-    if (keycode == 115) // S
+    if (keycode == KEY_S)
         data->key_s = 1;
-    if (keycode == 100) // D
+    if (keycode == KEY_D)
         data->key_d = 1;
-    if (keycode == 65361) // Flecha izquierda
+    if (keycode == KEY_LEFT)
         data->key_left = 1;
-    if (keycode == 65363) // Flecha derecha
+    if (keycode == KEY_RIGHT)
         data->key_right = 1;
-    if (keycode == 65307) // ESC (cierra juego)
+    if (keycode == KEY_ESC) // ESC (cierra juego)
         exit(0);
     return (0);
 }
 
 int	handle_keyrelease(int keycode, t_data *data)
 {
-    if (keycode == 119)
+    if (keycode == KEY_W)
         data->key_w = 0;
-    if (keycode == 97)
+    if (keycode == KEY_A)
         data->key_a = 0;
-    if (keycode == 115)
+    if (keycode == KEY_S)
         data->key_s = 0;
-    if (keycode == 100)
+    if (keycode == KEY_D)
         data->key_d = 0;
-    if (keycode == 65361)
+    if (keycode == KEY_LEFT)
         data->key_left = 0;
-    if (keycode == 65363)
+    if (keycode == KEY_RIGHT)
         data->key_right = 0;
     return (0);
 }

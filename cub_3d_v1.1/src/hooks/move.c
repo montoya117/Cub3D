@@ -2,8 +2,6 @@
 #include "cub_3d.h"
 
 #define PLAYER_RADIUS 0.05
-#define KEY_LEFT 65361   // ←
-#define KEY_RIGHT 65363  // →
 #define MOVE_SPEED 0.04   // Ajusta la velocidad 
 #define ROT_SPEED 0.04
 
@@ -68,22 +66,22 @@ void move_player(int keycode, t_data *data)
     new_y= data->player.pos_y;
 
     // Movimiento relativo donde miro (angle)
-    if (keycode == 119)
+    if (keycode == KEY_W)
     { // 'W': adelante
         new_x += cos(data->player.angle) * MOVE_SPEED;
         new_y += sin(data->player.angle) * MOVE_SPEED;
     }
-    else if (keycode == 115)
+    else if (keycode == KEY_S)
     { // 'S': atrás
         new_x -= cos(data->player.angle) * MOVE_SPEED;
         new_y -= sin(data->player.angle) * MOVE_SPEED;
     }
-    else if (keycode == 97)
+    else if (keycode == KEY_A)
     { // 'A': strafe izquierda
         new_x += sin(data->player.angle) * MOVE_SPEED;
         new_y -= cos(data->player.angle) * MOVE_SPEED;
     }
-    else if (keycode == 100)
+    else if (keycode == KEY_D)
     { // 'D': strafe derecha
         new_x -= sin(data->player.angle) * MOVE_SPEED;
         new_y += cos(data->player.angle) * MOVE_SPEED;
