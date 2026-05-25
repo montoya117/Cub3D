@@ -16,12 +16,34 @@ static void init_player(t_player *player)
     player->angle = 0.0;
 }
 
+static void init_texture(t_texture *tex)
+{
+    tex->img = NULL;
+    tex->addr = NULL;
+    tex->width = 0;
+    tex->height = 0;
+    tex->bpp = 0;
+    tex->line_len = 0;
+    tex->endian = 0;
+}
+
+static void init_mlx(t_mlx *mlx)
+{
+    mlx->mlx_ptr = NULL;
+    mlx->win_ptr = NULL;
+    mlx->img_ptr = NULL;
+    mlx->img_data = NULL;
+    mlx->bpp = 0;
+    mlx->size_line = 0;
+    mlx->endian = 0;
+}
+
 void    init_data(t_data *data)
 {
-    data->tex_no = NULL;
-    data->tex_so = NULL;
-    data->tex_we = NULL;
-    data->tex_ea = NULL;
+    data->tex_path_no = NULL;
+    data->tex_path_so = NULL;
+    data->tex_path_we = NULL;
+    data->tex_path_ea = NULL;
     data->color_f = -1;
     data->color_c = -1;
     data->config_count = 0;
@@ -33,6 +55,12 @@ void    init_data(t_data *data)
     data->key_d = 0;
     data->key_left = 0;
     data->key_right = 0;
+
+    init_texture(&data->tex_img_no);
+    init_texture(&data->tex_img_so);
+    init_texture(&data->tex_img_we);
+    init_texture(&data->tex_img_ea);
+    init_mlx(&data->mlx);
     init_map(&data->map);
     init_player(&data->player);
 }

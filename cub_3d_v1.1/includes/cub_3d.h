@@ -108,13 +108,26 @@ typedef struct s_col
 	int		y;
 }	t_col;
 
-/* Main data struct */
+/* Struct para las texturas*/
+typedef struct s_texture
+{
+    void    *img;
+    char    *addr;
+    int     width;
+    int     height;
+    int     bpp;
+    int     line_len;
+    int     endian;
+} t_texture;
+
+
+/* Principal data struct */
 typedef struct s_data
 {
-    char        *tex_no; // textures
-    char        *tex_so;
-    char        *tex_we;
-    char        *tex_ea;
+    char        *tex_path_no; // textures paths no img
+    char        *tex_path_so;
+    char        *tex_path_we;
+    char        *tex_path_ea;
     int         color_f;
     int         color_c;
     int         config_count;
@@ -123,19 +136,17 @@ typedef struct s_data
     t_player    player;
     t_map       map;
     t_mlx       mlx;
-    int key_w;
-    int key_a;
-    int key_s;
-    int key_d;
-    int key_left;
-    int key_right;
+    int         key_w;
+    int         key_a;
+    int         key_s;
+    int         key_d;
+    int         key_left;
+    int         key_right;
+    t_texture   tex_img_no;
+    t_texture   tex_img_ea;
+    t_texture   tex_img_so;
+    t_texture   tex_img_we;
 } t_data;
-
-typedef struct s_map_node
-{
-    char                *line;
-    struct s_map_node   *next;    
-}   t_map_node;
 
 // ** FUNCTIONS **s
 
@@ -176,43 +187,49 @@ int     flood_fill(char **tmp_grid, int col, int row, t_data *data);
 // ** UTILS_PARSER.C **
 int     is_str_digit(char *str);
 
-// ** UTILS_VALIDATEC **
+// ** UTILS_VALIDATE.C **
 void    free_matrix(char **matrix, int  height);
 char	**duplicate_matrix(char **src_matrix, int height);
 
+// ** TEXTURES.C **
+int     load_one_texture(t_data *data, t_texture *tex, char *path);
+int     load_textures(t_data *data);
+int     get_texture_pixel(t_texture *tex, int x, int y);
+
 //INIT_GRAPHICS.C
-int init_graphics(t_data *data);
+int     init_graphics(t_data *data);
 
 //HOOKS
-int	handle_keypress(int keycode, t_data *data);
-int handle_keyrelease(int keycode, t_data *data);
+int	    handle_keypress(int keycode, t_data *data);
+int     handle_keyrelease(int keycode, t_data *data);
 
 //MOVE
-int is_wall(double x, double y, t_data *data);
-int can_move(double new_x, double new_y, t_data *data);
-void check_and_move(double new_x, double new_y, t_data *data);
-void rotate_player(int keycode, t_data *data);
-void move_player(int keycode, t_data *data);
+int     is_wall(double x, double y, t_data *data);
+int     can_move(double new_x, double new_y, t_data *data);
+void    check_and_move(double new_x, double new_y, t_data *data);
+void    rotate_player(int keycode, t_data *data);
+void    move_player(int keycode, t_data *data);
 
 
 //PROCESS_MOVEMENT.C
-void process_movement(t_data *data);
+void    process_movement(t_data *data);
 
 //RENDER.C
-int render(t_data *data);
+int     render(t_data *data);
 //DRAW.c
-void draw(t_data *data);
+void    draw(t_data *data);
 //BUFFER_UTILS.C
-void buffer_put_pixel(t_mlx *mlx, int x, int y, int color);
-void clear_img_buffer(t_mlx *mlx);
+void    buffer_put_pixel(t_mlx *mlx, int x, int y, int color);
+void    clear_img_buffer(t_mlx *mlx);
 //DRAW_MINIMAP.C
-void draw_minimap_buffer(t_data *data);
+void    draw_minimap_buffer(t_data *data);
 
 // ** ERROR.C **
 int     print_error(char *str);
 void    free_array(char **array);
 void	free_data(t_data *data);
 void    free_map_list(t_list *map_list);
+void    free_graphics(t_data *data);
 
 // ** GNL **
 char	*get_next_line(int fd);

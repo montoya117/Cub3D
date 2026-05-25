@@ -13,13 +13,13 @@ int handle_texture(char *line, t_data *data)
 
     target = NULL;
     if (ft_strncmp(line, "NO", 2) == 0)
-        target = &data->tex_no;
+        target = &data->tex_path_no;
     else if (ft_strncmp(line, "SO", 2) == 0)
-        target = &data->tex_so;
+        target = &data->tex_path_so;
     else if (ft_strncmp(line, "WE", 2) == 0)
-        target = &data->tex_we;
+        target = &data->tex_path_we;
     else if (ft_strncmp(line, "EA", 2) == 0)
-        target = &data->tex_ea;
+        target = &data->tex_path_ea;
     // por si acaso
     if (!target)
         return (print_error("Identificador de textura inválido"));

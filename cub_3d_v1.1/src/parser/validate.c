@@ -8,7 +8,7 @@ Verifica de forma estricta que no falte ningún parámetro de la configuración 
 */
 int check_elements(t_data *data)
 {
-    if (data->tex_no == NULL || data->tex_so == NULL || data->tex_we == NULL || data->tex_ea == NULL)
+    if (data->tex_path_no == NULL || data->tex_path_so == NULL || data->tex_path_we == NULL || data->tex_path_ea == NULL)
         return(print_error("Faltan identificadores de textura esenciales"));
     if (data->color_c == -1 || data->color_f == -1)
         return (print_error("Faltan los colores de techo o suelo"));
