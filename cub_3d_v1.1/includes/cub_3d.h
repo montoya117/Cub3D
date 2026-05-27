@@ -25,6 +25,10 @@
 # define SPRITE_FRAMES 3
 #endif
 
+#ifndef FOV // 60 grados
+# define FOV (M_PI / 3) // 60 grados
+#endif
+
 // Macros for KEYs
 #ifdef __APPLE__
 # define KEY_ESC 53
@@ -61,30 +65,30 @@
 /*MLX STRUCT*/
 typedef struct s_mlx
 {
-    void    *mlx_ptr;   // Contexto minlbx
-    void    *win_ptr;   // Ventana principal
-    void    *img_ptr;   // Imagen para el render principal
-    char    *img_data;  // Datos de pixeles de la imagen (devueltos x mlx_get_data_addr)
-    int     bpp;
-    int     size_line;
-    int     endian;
+	void    *mlx_ptr;   // Contexto minlbx
+	void    *win_ptr;   // Ventana principal
+	void    *img_ptr;   // Imagen para el render principal
+	char    *img_data;  // Datos de pixeles de la imagen (devueltos x mlx_get_data_addr)
+	int     bpp;
+	int     size_line;
+	int     endian;
 } t_mlx;
 
 /* Map */
 typedef struct s_map
 {
-    char    **grid;
-    int     width;
-    int     height;
+	char    **grid;
+	int     width;
+	int     height;
 } t_map;
 
 /* Player */
 typedef struct s_player
 {
-    double  pos_x;
-    double  pos_y;
-    char    dir; // 'N', 'S', 'O', 'E'     
-    double  angle;
+	double  pos_x;
+	double  pos_y;
+	char    dir; // 'N', 'S', 'O', 'E'     
+	double  angle;
 } t_player;
 
 
@@ -114,40 +118,40 @@ typedef struct s_col
 
 //struc animacion
 typedef struct s_anim {
-    int sprite_w;
+	int sprite_w;
 int sprite_h;
-    int active;      
-    int frame;       
-    double x, y;   
-    int delay;       // Ticks a mostrar cada frame
-    int tick;        // Contador para cambiar de frame
+	int active;      
+	int frame;       
+	double x, y;   
+	int delay;       // Ticks a mostrar cada frame
+	int tick;        // Contador para cambiar de frame
 } t_anim;
 
 /* Main data struct */
 typedef struct s_data
 {
-    char        *tex_no; // textures
-    char        *tex_so;
-    char        *tex_we;
-    char        *tex_ea;
-    int         color_f;
-    int         color_c;
-    int         config_count;
-    int         map_started; // map flag
-    t_list      *map_list; //map antes de pasar a grid !!NUEVO
-    t_player    player;
-    t_map       map;
-    t_mlx       mlx;
-    int         key_w;
-    int         key_a;
-    int         key_s;
-    int         key_d;
-    int         key_left;
-    int         key_right;
-    void        *sprite_textures[SPRITE_FRAMES];
-    int sprite_w;
-    int sprite_h;
-    t_anim      explosion;
+	char        *tex_no; // textures
+	char        *tex_so;
+	char        *tex_we;
+	char        *tex_ea;
+	int         color_f;
+	int         color_c;
+	int         config_count;
+	int         map_started; // map flag
+	t_list      *map_list; //map antes de pasar a grid !!NUEVO
+	t_player    player;
+	t_map       map;
+	t_mlx       mlx;
+	int         key_w;
+	int         key_a;
+	int         key_s;
+	int         key_d;
+	int         key_left;
+	int         key_right;
+	void        *sprite_textures[SPRITE_FRAMES];
+	int sprite_w;
+	int sprite_h;
+	t_anim      explosion;
 } t_data;
 
 
@@ -155,8 +159,8 @@ typedef struct s_data
 
 typedef struct s_map_node
 {
-    char                *line;
-    struct s_map_node   *next;    
+	char                *line;
+	struct s_map_node   *next;    
 }   t_map_node;
 
 // ** FUNCTIONS **s

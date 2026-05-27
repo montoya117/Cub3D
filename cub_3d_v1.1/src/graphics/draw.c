@@ -1,9 +1,8 @@
 
 #include "cub_3d.h"
 #include <math.h>
-#define FOV (M_PI / 3) // 60 grados
 
-static void	find_ray_hit(t_data *data, double ray_angle, double *dist)
+static	void	find_ray_hit(t_data *data, double ray_angle, double *dist)
 {
 	t_ray	r;
 
@@ -22,14 +21,15 @@ static void	find_ray_hit(t_data *data, double ray_angle, double *dist)
 		r.map_x = (int)r.ray_x;
 		r.map_y = (int)r.ray_y;
 		if (r.map_y < 0 || r.map_y >= data->map.height
-			|| r.map_x < 0 || r.map_x >= (int)ft_strlen(data->map.grid[r.map_y]))
+			|| r.map_x < 0
+			|| r.map_x >= (int)ft_strlen(data->map.grid[r.map_y]))
 			r.hit = 1;
 		else if (data->map.grid[r.map_y][r.map_x] == '1')
 			r.hit = 1;
 	}
 }
 
-static void draw_column(t_data *data, int x, double dir_angle)
+static void	draw_column(t_data *data, int x, double dir_angle)
 {
 	t_col	c;
 
@@ -51,7 +51,7 @@ static void draw_column(t_data *data, int x, double dir_angle)
 	}
 }
 
-void draw(t_data *data)
+void	draw(t_data *data)
 {
 	int		x;
 	double	dir_angle;
@@ -65,4 +65,3 @@ void draw(t_data *data)
 	}
 	draw_minimap_buffer(data);
 }
-
