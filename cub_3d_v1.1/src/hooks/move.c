@@ -39,14 +39,14 @@ void check_and_move(double new_x, double new_y, t_data *data)
         data->player.pos_x = new_x;
         data->player.pos_y = new_y;
     }
-    else
+    else if (!data->explosion.active)    // <-- ESTA ES LA CLAVE
     {
         printf("Activando animacion en (%.2f, %.2f)\n", new_x, new_y);
         data->explosion.active = 1;
         data->explosion.frame = 0;
         data->explosion.x = new_x;
         data->explosion.y = new_y;
-        data->explosion.delay = 2; // para depurar más visible
+        data->explosion.delay = 1;
         data->explosion.tick = 0;
     }
 }
