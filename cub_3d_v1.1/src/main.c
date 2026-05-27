@@ -1,33 +1,6 @@
 
 #include "cub_3d.h"
 
-/*
-void hardcodear_mapa(t_data *data)
-{
-    // Tamaño del mapa
-    #define MAP_HEIGHT 5
-
-    // Mapa de ejemplo: el jugador está en (2, 2) mirando al norte
-    data->map.grid = malloc(sizeof(char *) * (MAP_HEIGHT + 1));
-    if (!data->map.grid)
-        return; // Maneja error si quieres
-
-    data->map.grid[0] = ft_strdup("1111111111");
-    data->map.grid[1] = ft_strdup("1000011001");
-    data->map.grid[2] = ft_strdup("10N0001001");
-    data->map.grid[3] = ft_strdup("1000000001");
-    data->map.grid[4] = ft_strdup("1111111111");
-    data->map.grid[5] = NULL;
-
-    data->map.height = MAP_HEIGHT;
-    data->map.width = 10; // todas las filas son iguales
-
-    // Posición y dirección del jugador (coincide con la 'N' en [2][2])
-    data->player.pos_x = 3;
-    data->player.pos_y = 3;
-    data->player.dir = 'N';
-}
-*/
 int main(int argc, char *argv[])
 {
     t_data  data;
@@ -69,8 +42,8 @@ int main(int argc, char *argv[])
     // DEBUGG
     printf("\nLet's go! ¡Todo el archivo .cub es válido y seguro!\n");
     printf("--- CONFIG DATA ---\n");
-    printf("NO: %s | SO: %s\n", data.tex_no, data.tex_so);
-    printf("WE: %s | EA: %s\n", data.tex_we, data.tex_ea);
+    printf("NO: %s | SO: %s\n", data.tex_path_no, data.tex_path_so);
+    printf("WE: %s | EA: %s\n", data.tex_path_we, data.tex_path_ea);
     printf("Floor: %d | Ceiling: %d\n", data.color_f, data.color_c);
     printf("Config count: %d/6\n", data.config_count);
     printf("-------------------\n");
@@ -100,6 +73,13 @@ int main(int argc, char *argv[])
         free_data(&data);
         return (1);
     }
+    /*
+    if (load_textures(&data) != 0)
+    {
+        free_data(&data);
+        return (1);
+    }
+    */
     mlx_hook(data.mlx.win_ptr, 2, 1L<<0, handle_keypress, &data);    // Key pressed
     mlx_hook(data.mlx.win_ptr, 3, 1L<<1, handle_keyrelease, &data);  // Key released
     mlx_loop_hook(data.mlx.mlx_ptr, render, &data);

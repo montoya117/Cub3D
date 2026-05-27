@@ -38,6 +38,7 @@ SRCS        =   $(SRC_DIR)/parser/parser.c \
                 $(SRC_DIR)/parser/parser_config_textures.c \
                 $(SRC_DIR)/parser/parser_config_colors.c \
                 $(SRC_DIR)/parser/init.c \
+				$(SRC_DIR)/textures/textures.c \
                 $(SRC_DIR)/graphics/init_graphics.c \
                 $(SRC_DIR)/graphics/render.c \
                 $(SRC_DIR)/graphics/draw.c \
