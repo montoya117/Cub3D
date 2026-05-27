@@ -220,6 +220,10 @@ void move_player(int keycode, t_data *data);
 //PROCESS_MOVEMENT.C
 void process_movement(t_data *data);
 
+//SPRITES
+void	draw_explosion_in_buffer(t_data *data);
+void update_explosion_anim(t_data *data);
+
 //RENDER.C
 int render(t_data *data);
 //DRAW.c
