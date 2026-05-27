@@ -1,6 +1,29 @@
 
 #include "cub_3d.h"
 
+
+void load_sprite_textures(t_data *data)
+{
+    int w, h;
+    data->sprite_textures[0] = mlx_xpm_file_to_image(data->mlx.mlx_ptr, "./sprites/explosion00.xpm", &w, &h);
+    data->sprite_w = w;  // GUARDA el tamaño aquí
+    data->sprite_h = h;
+    data->sprite_textures[1] = mlx_xpm_file_to_image(data->mlx.mlx_ptr, "./sprites/explosion01.xpm", &w, &h);
+    data->sprite_textures[2] = mlx_xpm_file_to_image(data->mlx.mlx_ptr, "./sprites/explosion02.xpm", &w, &h);
+}
+
+/*
+void load_sprite_textures(t_data *data)
+{
+    int w, h;
+    data->sprite_textures[0] = mlx_xpm_file_to_image(data->mlx.mlx_ptr, "./sprites/explosion00.xpm", &w, &h);
+    if (!data->sprite_textures[0]) printf("Error al cargar explosion_00.xpm\n");
+    data->sprite_textures[1] = mlx_xpm_file_to_image(data->mlx.mlx_ptr, "./sprites/explosion01.xpm", &w, &h);
+    if (!data->sprite_textures[1]) printf("Error al cargar explosion_01.xpm\n");
+    data->sprite_textures[2] = mlx_xpm_file_to_image(data->mlx.mlx_ptr, "./sprites/explosion02.xpm", &w, &h);
+    if (!data->sprite_textures[2]) printf("Error al cargar explosion_02.xpm\n");
+}*/
+
 int init_graphics(t_data *data)
 {
     data->mlx.mlx_ptr = mlx_init();//iniciamos minilibx
@@ -15,6 +38,9 @@ int init_graphics(t_data *data)
     data->mlx.img_data = mlx_get_data_addr(data->mlx.img_ptr, &data->mlx.bpp, &data->mlx.size_line, &data->mlx.endian);
     if (!data->mlx.img_data)
         return (0);
+    load_sprite_textures(data);
     //ANYADIR RENDER
     return(1);
 }
+
+

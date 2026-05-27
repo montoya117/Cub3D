@@ -33,6 +33,16 @@ void    init_data(t_data *data)
     data->key_d = 0;
     data->key_left = 0;
     data->key_right = 0;
+    data->explosion.active = 0;
+    data->explosion.frame = 0;
+    data->explosion.x = 0;
+    data->explosion.y = 0;
+    data->explosion.delay = 0;
+    data->explosion.tick = 0;
+    data->sprite_w = 0;
+    data->sprite_h = 0;
+    data->explosion.sprite_w = 0;
+    data->explosion.sprite_h = 0;
     init_map(&data->map);
     init_player(&data->player);
 }

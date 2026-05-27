@@ -21,6 +21,10 @@
 # define M_PI_2 1.5707963267948966
 #endif
 
+#ifndef M_SPRITE_FRAMES
+# define SPRITE_FRAMES 3
+#endif
+
 // Macros for KEYs
 #ifdef __APPLE__
 # define KEY_ESC 53
@@ -108,6 +112,17 @@ typedef struct s_col
 	int		y;
 }	t_col;
 
+//struc animacion
+typedef struct s_anim {
+    int sprite_w;
+int sprite_h;
+    int active;      
+    int frame;       
+    double x, y;   
+    int delay;       // Ticks a mostrar cada frame
+    int tick;        // Contador para cambiar de frame
+} t_anim;
+
 /* Main data struct */
 typedef struct s_data
 {
@@ -123,13 +138,20 @@ typedef struct s_data
     t_player    player;
     t_map       map;
     t_mlx       mlx;
-    int key_w;
-    int key_a;
-    int key_s;
-    int key_d;
-    int key_left;
-    int key_right;
+    int         key_w;
+    int         key_a;
+    int         key_s;
+    int         key_d;
+    int         key_left;
+    int         key_right;
+    void        *sprite_textures[SPRITE_FRAMES];
+    int sprite_w;
+    int sprite_h;
+    t_anim      explosion;
 } t_data;
+
+
+
 
 typedef struct s_map_node
 {
