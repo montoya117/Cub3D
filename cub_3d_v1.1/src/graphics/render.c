@@ -35,7 +35,9 @@ void	draw_explosion_in_buffer(t_data *data)
 		{
 			pixel_offset = y * size_line + x * (bpp / 8);
 			color = *(unsigned int *)(sprite_data + pixel_offset);
-			buffer_put_pixel(&data->mlx, ox + x, oy + y, color);
+			// Solo pinta si no es negro (transparente)
+			if ((color & 0x00FFFFFF) != 0x000000)
+    			buffer_put_pixel(&data->mlx, ox + x, oy + y, color);
 		}
 	}
 }
