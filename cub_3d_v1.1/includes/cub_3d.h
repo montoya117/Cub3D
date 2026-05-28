@@ -97,13 +97,28 @@ typedef struct s_ray
 {
 	double	dir_x;
 	double	dir_y;
-	double	ray_x;
-	double	ray_y;
-	double	step;
 	int		map_x;
 	int		map_y;
+	double	delta_dist_x;
+    double	delta_dist_y;
+	double	side_dist_x;
+	double	side_dist_y;
+	int		step_x;
+    int		step_y;
 	int		hit;
+	int		side;
+	double	wall_x;
 }	t_ray;
+
+typedef struct s_draw_data
+{
+    t_texture   *tex;
+    int         tex_x;
+    int         tex_y;
+    double      step;
+    double      tex_pos;
+    int         color;
+}   t_draw_data;
 
 typedef struct s_col
 {
