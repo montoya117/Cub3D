@@ -119,7 +119,7 @@ typedef struct s_col
 //struc animacion
 typedef struct s_anim {
 	int sprite_w;
-int sprite_h;
+	int sprite_h;
 	int active;      
 	int frame;       
 	double x, y;   
@@ -166,8 +166,8 @@ typedef struct s_data
     t_texture   tex_img_so;
     t_texture   tex_img_we;
 	void        *sprite_textures[SPRITE_FRAMES];
-	int sprite_w;
-	int sprite_h;
+	int 		sprite_w;
+	int 		sprite_h;
 	t_anim      explosion;
 } t_data;
 
