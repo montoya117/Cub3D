@@ -73,15 +73,16 @@ int main(int argc, char *argv[])
         free_data(&data);
         return (1);
     }
-    /*
     if (load_textures(&data) != 0)
     {
         free_data(&data);
         return (1);
     }
-    */
+    // 7. Configuración de los Hooks de la MiniLibX
     mlx_hook(data.mlx.win_ptr, 2, 1L<<0, handle_keypress, &data);    // Key pressed
     mlx_hook(data.mlx.win_ptr, 3, 1L<<1, handle_keyrelease, &data);  // Key released
+    //./mlx_hook(data.mlx.win_ptr, 17, 0, close_game, &data); // Cierre limpio con la X
+    // El motor en marcha: ejecuta 'render' continuamente en cada frame
     mlx_loop_hook(data.mlx.mlx_ptr, render, &data);
     mlx_loop(data.mlx.mlx_ptr);
     

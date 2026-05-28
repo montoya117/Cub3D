@@ -110,16 +110,6 @@ typedef struct s_ray
 	double	wall_x;
 }	t_ray;
 
-typedef struct s_draw_data
-{
-    t_texture   *tex;
-    int         tex_x;
-    int         tex_y;
-    double      step;
-    double      tex_pos;
-    int         color;
-}   t_draw_data;
-
 typedef struct s_col
 {
 	double	percent;
@@ -154,6 +144,15 @@ typedef struct s_texture
     int     endian;
 } t_texture;
 
+typedef struct s_draw_data
+{
+    t_texture   *tex;
+    int         tex_x;
+    int         tex_y;
+    double      step;
+    double      tex_pos;
+    int         color;
+}   t_draw_data;
 
 /* Principal data struct */
 typedef struct s_data
@@ -234,6 +233,12 @@ int     load_one_texture(t_data *data, t_texture *tex, char *path);
 int     load_textures(t_data *data);
 int     get_texture_pixel(t_texture *tex, int x, int y);
 
+// ** RAY_RENDER.C **
+void		init_ray_base(t_ray *r);
+void		init_dda_vars(t_data *data, t_ray *r);
+t_texture	*select_wall_texture(t_data *data, t_ray *r);
+// void		init_draw_data(t_data *data, t_draw_data *d, t_ray *r, t_col *c);
+
 //INIT_GRAPHICS.C
 int     init_graphics(t_data *data);
 
@@ -254,12 +259,15 @@ void    process_movement(t_data *data);
 
 //SPRITES
 void	draw_explosion_in_buffer(t_data *data);
-void update_explosion_anim(t_data *data);
+void	update_explosion_anim(t_data *data);
 
 //RENDER.C
 int     render(t_data *data);
+
 //DRAW.c
-void    draw(t_data *data);
+void 	draw_column(t_data *data, int x, double dir_angle);
+void 	draw(t_data *data);
+
 //BUFFER_UTILS.C
 void    buffer_put_pixel(t_mlx *mlx, int x, int y, int color);
 void    clear_img_buffer(t_mlx *mlx);

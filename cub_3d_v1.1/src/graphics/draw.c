@@ -1,69 +1,107 @@
 
 #include "cub_3d.h"
-#include <math.h>
 
-static	void	find_ray_hit(t_data *data, double ray_angle, double *dist)
-{
-	t_ray	r;
-
-	r.dir_x = cos(ray_angle);
-	r.dir_y = sin(ray_angle);
-	r.ray_x = data->player.pos_x;
-	r.ray_y = data->player.pos_y;
-	*dist = 0.0;
-	r.step = 0.01;
-	r.hit = 0;
-	while (!r.hit && *dist < 20.0)
-	{
-		r.ray_x += r.dir_x * r.step;
-		r.ray_y += r.dir_y * r.step;
-		*dist += r.step;
-		r.map_x = (int)r.ray_x;
-		r.map_y = (int)r.ray_y;
-		if (r.map_y < 0 || r.map_y >= data->map.height
-			|| r.map_x < 0
-			|| r.map_x >= (int)ft_strlen(data->map.grid[r.map_y]))
-			r.hit = 1;
-		else if (data->map.grid[r.map_y][r.map_x] == '1')
-			r.hit = 1;
-	}
+static void find_ray_hit(t_data *data, t_ray *r)
+{    
+    while (!r->hit)
+    {
+        if (r->side_dist_x < r->side_dist_y)
+        {
+            r->side_dist_x += r->delta_dist_x;
+            r->map_x += r->step_x;
+            r->side = 0;
+        }
+        else
+        {
+            r->side_dist_y += r->delta_dist_y;
+            r->map_y += r->step_y;
+            r->side = 1;
+        }
+        if (r->map_y < 0 || r->map_y >= data->map.height
+            || r->map_x < 0 || r->map_x >= data->map.width)
+            break;
+        if (data->map.grid[r->map_y][r->map_x] == '1')
+            r->hit = 1;
+    }
+    
+    // Al salir del bucle, calculamos wall_x (porcentaje de impacto en el muro)
+    if (r->side == 0)
+        r->wall_x = data->player.pos_y + (r->side_dist_x - r->delta_dist_x) * r->dir_y;
+    else
+        r->wall_x = data->player.pos_x + (r->side_dist_y - r->delta_dist_y) * r->dir_x;
+    r->wall_x -= floor(r->wall_x); // dejar resto para poder trabajar
 }
 
-static void	draw_column(t_data *data, int x, double dir_angle)
+void draw(t_data *data)
 {
-	t_col	c;
+    int x;
 
-	c.percent = (double)x / (double)WIN_W;
-	c.ray_angle = dir_angle - (FOV / 2) + c.percent * FOV;
-	find_ray_hit(data, c.ray_angle, &c.dist);
-	c.dist = c.dist * cos(c.ray_angle - dir_angle);
-	if (c.dist < 0.00001)
-		c.dist = 0.00001;
-	c.line_height = (int)(WIN_H / c.dist);
-	c.y_start = WIN_H / 2 - c.line_height / 2;
-	c.y_end = WIN_H / 2 + c.line_height / 2;
-	c.y = c.y_start;
-	while (c.y < c.y_end)
-	{
-		if (c.y >= 0 && c.y < WIN_H)
-			buffer_put_pixel(&data->mlx, x, c.y, 0xCCCCCC);
-		c.y++;
-	}
-}
+    // Pintar el cielo y el suelo en el buffer primero (si tienes una función para ello)
+    // draw_ceiling_and_floor(data); 
 
-void	draw(t_data *data)
+    x = 0;
+    while (x < WIN_W)
+    {
+        // Lanzamos un rayo por cada columna 'x' de la pantalla
+        // Pasamos la posición x y el ángulo actual hacia donde mira el jugador
+        draw_column(data, x, data->player.angle);
+        x++;
+    }
+} 
+
+void draw_column(t_data *data, int x, double dir_angle)
 {
-	int		x;
-	double	dir_angle;
+    t_col       c;
+    t_ray       r;
+    t_draw_data d;
 
-	dir_angle = data->player.angle;
-	x = 0;
-	while (x < WIN_W)
-	{
-		draw_column(data, x, dir_angle);
-		x++;
-	}
-	draw_minimap_buffer(data);
+    // 1. Inicialización del Rayo
+    init_ray_base(&r); // <--- AQUÍ LIMPIAS EL RAYO
+    c.percent = (double)x / (double)WIN_W;
+    c.ray_angle = dir_angle - (FOV / 2.0) + c.percent * FOV;
+    r.dir_x = cos(c.ray_angle);
+    r.dir_y = sin(c.ray_angle);
+
+    // 2. Ejecución de la Física (DDA)
+    init_dda_vars(data, &r);
+    find_ray_hit(data, &r);
+    c.dist = (r.side == 0) ? (r.side_dist_x - r.delta_dist_x) : (r.side_dist_y - r.delta_dist_y);
+    // 3. Proyección de la Columna (Pantalla)
+    c.dist = c.dist * cos(c.ray_angle - dir_angle);
+    if (c.dist < 0.00001)
+        c.dist = 0.00001;
+    c.line_height = (int)(WIN_H / c.dist);
+    c.y_start = WIN_H / 2 - c.line_height / 2;
+    c.y_end = WIN_H / 2 + c.line_height / 2;
+
+    // 4. Configuración del Mapeo de Texturas
+    d.tex = select_wall_texture(data, &r);
+    //printf("Textura cargada: %p, Ancho: %d, Alto: %d\n", d.tex->img, d.tex->width, d.tex->height);
+    d.tex_x = (int)(r.wall_x * (double)d.tex->width);
+    if ((r.side == 0 && r.dir_x > 0) || (r.side == 1 && r.dir_y < 0))
+        d.tex_x = d.tex->width - d.tex_x - 1;
+    d.step = (double)d.tex->height / (double)c.line_height;
+    d.tex_pos = (c.y_start - WIN_H / 2 + c.line_height / 2) * d.step;
+
+    // 5. Ajuste y Renderizado Vertical
+    c.y = c.y_start;
+    if (c.y < 0)
+    {
+        d.tex_pos += d.step * (-c.y);
+        c.y = 0;
+    }
+    if (c.y_end > WIN_H)
+        c.y_end = WIN_H;
+    while (c.y < c.y_end)
+    {
+        d.tex_y = (int)d.tex_pos & (d.tex->height - 1);
+        d.color = get_texture_pixel(d.tex, d.tex_x, d.tex_y);
+        if (r.side == 1)
+            d.color = (d.color >> 1) & 0x7F7F7F;
+        buffer_put_pixel(&data->mlx, x, c.y, d.color);
+        d.tex_pos += d.step;
+        c.y++;
+    }
 }
 
 /*
@@ -232,118 +270,6 @@ static t_texture *select_wall_texture(t_data *data, t_ray *r)
     return (&data->tex_img_no);
 }
 
-void draw_column(t_data *data, int x, double dir_angle)
-{
-    t_col       c;
-    t_ray       r;
-    t_draw_data d;
-
-    // =========================================================================
-    // 1. INICIALIZACIÓN DEL RAYO (ÁNGULO Y DIRECCIÓN)
-    // =========================================================================
-    // 'percent' nos dice en qué columna de la pantalla estamos (de 0.0 a 1.0)
-    c.percent = (double)x / (double)WIN_W;
-    
-    // Calculamos el ángulo exacto de este rayo dentro de nuestro campo de visión (FOV)
-    c.ray_angle = dir_angle - (FOV / 2.0) + c.percent * FOV;
-    
-    // Convertimos ese ángulo abstracto en vectores directores 2D usando cos y sin
-    r.dir_x = cos(c.ray_angle);
-    r.dir_y = sin(c.ray_angle);
-
-    // =========================================================================
-    // 2. EJECUCIÓN DE LA FÍSICA (DDA) Y DISTANCIA REAL
-    // =========================================================================
-    // Llamamos al DDA para que el rayo viaje por la matriz hasta chocar con un '1'
-    find_ray_hit(data, &r);
-    
-    // TRADUCCIÓN DEL TERNARIO: Calculamos la distancia exacta perpendicular recorrida
-    if (r.side == 0)
-    {
-        // Si chocó contra una pared vertical (Este/Oeste), usamos la distancia en X
-        c.dist = r.side_dist_x - r.delta_dist_x;
-    }
-    else
-    {
-        // Si chocó contra una pared horizontal (Norte/Sur), usamos la distancia en Y
-        c.dist = r.side_dist_y - r.delta_dist_y; // resto delta para k no sea pared
-    }
-
-    // =========================================================================
-    // 3. PROYECCIÓN DE LA COLUMNA (CÁLCULO DEL TAMAÑO EN PANTALLA)
-    // =========================================================================
-    // Corrección del efecto "Ojo de Pez" (multiplicamos por el coseno del ángulo relativo)
-    c.dist = c.dist * cos(c.ray_angle - dir_angle);
-    
-    // Protección anti-cracheo: Si estamos pegados al muro, la distancia no puede ser 0
-    if (c.dist < 0.00001)
-        c.dist = 0.00001;
-        
-    // Calculamos el alto del muro en la pantalla (A menos distancia, más alto el muro)
-    c.line_height = (int)(WIN_H / c.dist);
-    
-    // Calculamos el píxel de arriba (y_start) y el de abajo (y_end) donde empieza el muro
-    c.y_start = WIN_H / 2 - c.line_height / 2;
-    c.y_end = WIN_H / 2 + c.line_height / 2;
-
-    // =========================================================================
-    // 4. CONFIGURACIÓN DEL MAPEO DE TEXTURAS (DÓNDE GOLPEA EN EL XPM)
-    // =========================================================================
-    // Seleccionamos la textura correcta (NO, SO, EA, WE) basándonos en 'side' y la dirección
-    d.tex = select_wall_texture(data, &r);
-    
-    // Pasamos el porcentaje del muro (wall_x) a píxeles reales de ancho de la textura
-    d.tex_x = (int)(r.wall_x * (double)d.tex->width);
-    
-    // Si vemos la pared al revés (espejo), invertimos el eje X de la textura para que no se lea volteada
-    if ((r.side == 0 && r.dir_x > 0) || (r.side == 1 && r.dir_y < 0))
-        d.tex_x = d.tex->width - d.tex_x - 1;
-        
-    // 'step' nos dice cuántos píxeles de la textura avanzar por cada píxel de pantalla
-    d.step = (double)d.tex->height / (double)c.line_height;
-    
-    // Calculamos la posición inicial de textura, adaptada por si el muro es más alto que la pantalla
-    d.tex_pos = (c.y_start - WIN_H / 2 + c.line_height / 2) * d.step;
-
-    // 5. Ajuste y Renderizado Vertical
-    render_ray(data, x, &c, &r, &d);
-}
-
-static void render_ray(t_data *data, int x, t_col *c, t_ray *r, t_draw_data *d)
-{
-    // 1. Ajuste del límite superior (Si el muro se sale por arriba)
-    c->y = c->y_start;
-    if (c->y < 0)
-    {
-        d->tex_pos += d->step * (-c->y);
-        c->y = 0;
-    }
-    
-    // 2. Ajuste del límite inferior (Si el muro se sale por abajo)
-    if (c->y_end > WIN_H)
-        c->y_end = WIN_H;
-        
-    // 3. El bucle vertical de pintado píxel a píxel
-    while (c->y < c->y_end)
-    {
-        // Calculamos la fila exacta de la textura (con el truco binario anti-SegFault)
-        d->tex_y = (int)d->tex_pos & (d->tex->height - 1);
-        
-        // Extraemos el color del archivo XPM
-        d->color = get_texture_pixel(d->tex, d->tex_x, d->tex_y);
-        
-        // Si es cara Norte/Sur, aplicamos la sombra longitudinal
-        if (r->side == 1)
-            d->color = (d->color >> 1) & 0x7F7F7F;
-            
-        // Pintamos el píxel en el buffer de la MLX
-        buffer_put_pixel(&data->mlx, x, c->y, d->color);
-        
-        // Avanzamos en la textura y bajamos un píxel en la pantalla
-        d->tex_pos += d->step;
-        c->y++;
-    }
-}
 
 void draw_column(t_data *data, int x, double dir_angle)
 {
