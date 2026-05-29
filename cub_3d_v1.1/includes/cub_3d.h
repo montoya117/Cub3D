@@ -91,6 +91,28 @@ typedef struct s_player
 	double  angle;
 } t_player;
 
+//_____ Minimaap____
+typedef struct s_minimap
+{
+    int tile;
+    int y;
+    int x;
+    char cell;
+    int max_minimap_size;
+    int largest;
+    int color;
+}   t_minimap;
+
+//----Minimap player
+typedef struct s_minimap_player
+{
+    int px;
+    int py;
+    int i;
+    int x;
+    int y;
+    double angle;
+}   t_minimap_player;
 
 //STRUCTS AUXILIARES PARA DIBUJAR
 typedef struct s_ray
@@ -121,16 +143,37 @@ typedef struct s_col
 	int		y;
 }	t_col;
 
+
+
 //struc animacion
 typedef struct s_anim {
 	int sprite_w;
 	int sprite_h;
 	int active;      
 	int frame;       
-	double x, y;   
+	double x;
+	double y;
 	int delay;       // Ticks a mostrar cada frame
 	int tick;        // Contador para cambiar de frame
 } t_anim;
+
+//struct animacion helper
+typedef struct s_explosion_helper
+{
+	int bpp;
+	int size_line;
+	int endian;
+	int w;
+	int h;
+	int ox;
+	int oy;
+	int x;
+	int y;
+	int pixel_offset;
+	int color;
+	void *img;
+	char *sprite_data;
+}	t_explosion_helper;
 
 /* Struct para las texturas*/
 typedef struct s_texture
@@ -153,6 +196,12 @@ typedef struct s_draw_data
     double      tex_pos;
     int         color;
 }   t_draw_data;
+//render cntx
+typedef struct s_render_ctx {
+	t_col c;
+	t_ray r;
+	t_draw_data d;
+} t_render_ctx;
 
 /* Principal data struct */
 typedef struct s_data
@@ -245,6 +294,7 @@ int     init_graphics(t_data *data);
 //HOOKS
 int	    handle_keypress(int keycode, t_data *data);
 int     handle_keyrelease(int keycode, t_data *data);
+int		close_program(t_data *data);
 
 //MOVE
 int     is_wall(double x, double y, t_data *data);

@@ -1,529 +1,126 @@
 
 #include "cub_3d.h"
 
-static void find_ray_hit(t_data *data, t_ray *r)
-{    
-    while (!r->hit)
-    {
-        if (r->side_dist_x < r->side_dist_y)
-        {
-            r->side_dist_x += r->delta_dist_x;
-            r->map_x += r->step_x;
-            r->side = 0;
-        }
-        else
-        {
-            r->side_dist_y += r->delta_dist_y;
-            r->map_y += r->step_y;
-            r->side = 1;
-        }
-        if (r->map_y < 0 || r->map_y >= data->map.height
-            || r->map_x < 0 || r->map_x >= data->map.width)
-            break;
-        if (data->map.grid[r->map_y][r->map_x] == '1')
-            r->hit = 1;
-    }
-    
-    // Al salir del bucle, calculamos wall_x (porcentaje de impacto en el muro)
-    if (r->side == 0)
-        r->wall_x = data->player.pos_y + (r->side_dist_x - r->delta_dist_x) * r->dir_y;
-    else
-        r->wall_x = data->player.pos_x + (r->side_dist_y - r->delta_dist_y) * r->dir_x;
-    r->wall_x -= floor(r->wall_x); // dejar resto para poder trabajar
+static void	find_ray_hit_position(t_data *data, t_ray *r)
+{
+	while (!r->hit)
+	{
+		if (r->side_dist_x < r->side_dist_y)
+		{
+			r->side_dist_x += r->delta_dist_x;
+			r->map_x += r->step_x;
+			r->side = 0;
+		}
+		else
+		{
+			r->side_dist_y += r->delta_dist_y;
+			r->map_y += r->step_y;
+			r->side = 1;
+		}
+		if (r->map_y < 0 || r->map_y >= data->map.height
+			|| r->map_x < 0 || r->map_x >= data->map.width)
+			break ;
+		if (data->map.grid[r->map_y][r->map_x] == '1')
+			r->hit = 1;
+	}
 }
 
-void draw(t_data *data)
+static void	calc_ray_and_distance(t_data *data, t_render_ctx *ctx,
+	int x, double dir_angle)
 {
-    int x;
-
-    // Pintar el cielo y el suelo en el buffer primero (si tienes una función para ello)
-    // draw_ceiling_and_floor(data); 
-
-    x = 0;
-    while (x < WIN_W)
-    {
-        // Lanzamos un rayo por cada columna 'x' de la pantalla
-        // Pasamos la posición x y el ángulo actual hacia donde mira el jugador
-        draw_column(data, x, data->player.angle);
-        x++;
-    }
-} 
-
-void draw_column(t_data *data, int x, double dir_angle)
-{
-    t_col       c;
-    t_ray       r;
-    t_draw_data d;
-
-    // 1. Inicialización del Rayo
-    init_ray_base(&r); // <--- AQUÍ LIMPIAS EL RAYO
-    c.percent = (double)x / (double)WIN_W;
-    c.ray_angle = dir_angle - (FOV / 2.0) + c.percent * FOV;
-    r.dir_x = cos(c.ray_angle);
-    r.dir_y = sin(c.ray_angle);
-
-    // 2. Ejecución de la Física (DDA)
-    init_dda_vars(data, &r);
-    find_ray_hit(data, &r);
-    c.dist = (r.side == 0) ? (r.side_dist_x - r.delta_dist_x) : (r.side_dist_y - r.delta_dist_y);
-    // 3. Proyección de la Columna (Pantalla)
-    c.dist = c.dist * cos(c.ray_angle - dir_angle);
-    if (c.dist < 0.00001)
-        c.dist = 0.00001;
-    c.line_height = (int)(WIN_H / c.dist);
-    c.y_start = WIN_H / 2 - c.line_height / 2;
-    c.y_end = WIN_H / 2 + c.line_height / 2;
-
-    // 4. Configuración del Mapeo de Texturas
-    d.tex = select_wall_texture(data, &r);
-    //printf("Textura cargada: %p, Ancho: %d, Alto: %d\n", d.tex->img, d.tex->width, d.tex->height);
-    d.tex_x = (int)(r.wall_x * (double)d.tex->width);
-    if ((r.side == 0 && r.dir_x > 0) || (r.side == 1 && r.dir_y < 0))
-        d.tex_x = d.tex->width - d.tex_x - 1;
-    d.step = (double)d.tex->height / (double)c.line_height;
-    d.tex_pos = (c.y_start - WIN_H / 2 + c.line_height / 2) * d.step;
-
-    // 5. Ajuste y Renderizado Vertical
-    c.y = c.y_start;
-    if (c.y < 0)
-    {
-        d.tex_pos += d.step * (-c.y);
-        c.y = 0;
-    }
-    if (c.y_end > WIN_H)
-        c.y_end = WIN_H;
-    while (c.y < c.y_end)
-    {
-        d.tex_y = (int)d.tex_pos & (d.tex->height - 1);
-        d.color = get_texture_pixel(d.tex, d.tex_x, d.tex_y);
-        if (r.side == 1)
-            d.color = (d.color >> 1) & 0x7F7F7F;
-        buffer_put_pixel(&data->mlx, x, c.y, d.color);
-        d.tex_pos += d.step;
-        c.y++;
-    }
+	ctx->c.percent = (double)x / (double)WIN_W;
+	ctx->c.ray_angle = dir_angle - (FOV / 2.0) + ctx->c.percent * FOV;
+	ctx->r.dir_x = cos(ctx->c.ray_angle);
+	ctx->r.dir_y = sin(ctx->c.ray_angle);
+	ctx->r.map_x = (int)data->player.pos_x;
+	ctx->r.map_y = (int)data->player.pos_y;
+	init_dda_vars(data, &ctx->r);
+	find_ray_hit_position(data, &ctx->r);
+	// Calculo de wall_x
+	if (ctx->r.side == 0)
+		ctx->r.wall_x = data->player.pos_y
+			+ (ctx->r.side_dist_x - ctx->r.delta_dist_x) * ctx->r.dir_y;
+	else
+		ctx->r.wall_x = data->player.pos_x
+			+ (ctx->r.side_dist_y - ctx->r.delta_dist_y) * ctx->r.dir_x;
+	ctx->r.wall_x -= floor(ctx->r.wall_x);
+	// (eevita el fish-eye)
+	if (ctx->r.side == 0)
+		ctx->c.dist = ctx->r.side_dist_x - ctx->r.delta_dist_x;
+	else
+		ctx->c.dist = ctx->r.side_dist_y - ctx->r.delta_dist_y;
+	ctx->c.dist = ctx->c.dist * cos(ctx->c.ray_angle - dir_angle);
+	if (ctx->c.dist < 0.00001)
+		ctx->c.dist = 0.00001;
 }
 
-/*
-structs ——>>
-
-typedef struct s_ray
+static void	calc_projection_and_texture(t_data *data, t_render_ctx *ctx)
 {
-    // Vectores directores (los que sacas con cos y sin)
-    double      dir_x;
-    double      dir_y;
-
-    // Posición actual en las casillas del mapa (matriz)
-    int         map_x;
-    int         map_y;
-
-    // Las constantes fijas de la diagonal (el "precio" por casilla)
-    double      delta_dist_x;
-    double      delta_dist_y;
-
-    // Los acumuladores (distancia al siguiente cruce de línea)
-    double      side_dist_x;
-    double      side_dist_y;
-
-    // Dirección del salto en la matriz (siempre 1 o -1)
-    int         step_x;
-    int         step_y;
-
-    // Flags de control de impacto
-    int         hit;   // 0 si no hay muro, 1 si lo encuentra
-    int         side;  // 0 si choca en cara vertical (X), 1 si choca en horizontal (Y)
-    double      wall_x; // El porcentaje exacto (0.0 a 1.0) de impacto en el muro
-}   t_ray;
-
-typedef struct s_draw_data
-{
-    t_texture   *tex;
-    int         tex_x;
-    int         tex_y;
-    double      step;
-    double      tex_pos;
-    int         color;
-}   t_draw_data;
-
-static void init_dda_vars(t_data *data, t_ray *r)
-{
-    // -------------------------------------------------------------
-    // STEP 1: CALCULAR EL "PRECIO EN DIAGONAL" DE CADA EJE (DELTA)
-    // -------------------------------------------------------------
-    // ¿El rayo se mueve en horizontal?
-    if (r->dir_x == 0)
-    {
-        r->delta_dist_x = 1e30; // Si va recto vertical, nunca cruza líneas en X (precio infinito)
-    }
-    else
-    {
-        r->delta_dist_x = fabs(1.0 / r->dir_x); // Hipotenusa para cruzar 1 bloque entero de X
-    }
-
-    // ¿El rayo se mueve en vertical?
-    if (r->dir_y == 0)
-    {
-        r->delta_dist_y = 1e30; // Si va recto horizontal, nunca cruza líneas en Y (precio infinito)
-    }
-    else
-    {
-        r->delta_dist_y = fabs(1.0 / r->dir_y); // Hipotenusa para cruzar 1 bloque entero de Y
-    }
-
-    // -------------------------------------------------------------
-    // STEP 2: LOCALIZAR LA BALDOSA INICIAL EN LA MATRIZ (ENTEROS)
-    // -------------------------------------------------------------
-    r->map_x = (int)data->player.pos_x; // Truncamos los decimales del jugador
-    r->map_y = (int)data->player.pos_y; // Ejemplo: 3.45 se convierte en la casilla 3
-
-    // -------------------------------------------------------------
-    // STEP 3: CALCULAR EL PRIMER SALTO EN EL EJE X (HORIZONTALES)
-    // -------------------------------------------------------------
-    if (r->dir_x < 0)
-    {
-        r->step_x = -1; // El rayo va a la izquierda (restamos columnas en la matriz)
-        
-        // Distancia horizontal desde el jugador hasta la línea de ATRÁS,
-        // multiplicada por el precio diagonal
-        r->side_dist_x = (data->player.pos_x - r->map_x) * r->delta_dist_x;
-    }
-    else
-    {
-        r->step_x = 1; // El rayo va a la derecha (sumamos columnas en la matriz)
-        
-        // Distancia horizontal desde el jugador hasta la línea de DELANTE,
-        // multiplicada por el precio diagonal
-        r->side_dist_x = (r->map_x + 1.0 - data->player.pos_x) * r->delta_dist_x;
-    }
-
-    // -------------------------------------------------------------
-    // STEP 4: CALCULAR EL PRIMER SALTO EN EL EJE Y (VERTICALES)
-    // -------------------------------------------------------------
-    if (r->dir_y < 0)
-    {
-        r->step_y = -1; // El rayo va hacia arriba (Norte, restamos filas en la matriz)
-        
-        // Distancia vertical desde el jugador hasta la línea de ARRIBA,
-        // multiplicada por el precio diagonal
-        r->side_dist_y = (data->player.pos_y - r->map_y) * r->delta_dist_y;
-    }
-    else
-    {
-        r->step_y = 1; // El rayo va hacia abajo (Sur, sumamos filas en la matriz)
-        
-        // Distancia vertical desde el jugador hasta la línea de ABAJO,
-        // multiplicada por el precio diagonal
-        r->side_dist_y = (r->map_y + 1.0 - data->player.pos_y) * r->delta_dist_y;
-    }
+	ctx->c.line_height = (int)(WIN_H / ctx->c.dist);
+	ctx->c.y_start = WIN_H / 2 - ctx->c.line_height / 2;
+	ctx->c.y_end = WIN_H / 2 + ctx->c.line_height / 2;
+	ctx->d.tex = select_wall_texture(data, &ctx->r);
+	ctx->d.tex_x = (int)(ctx->r.wall_x * (double)ctx->d.tex->width);
+	// Control d flip seguun dir
+	if ((ctx->r.side == 0 && ctx->r.dir_x > 0)
+		|| (ctx->r.side == 1 && ctx->r.dir_y < 0))
+		ctx->d.tex_x = ctx->d.tex->width - ctx->d.tex_x - 1;
+	if (ctx->d.tex_x < 0)
+		ctx->d.tex_x = 0;
+	if (ctx->d.tex_x >= ctx->d.tex->width)
+		ctx->d.tex_x = ctx->d.tex->width - 1;
+	ctx->d.step = (double)ctx->d.tex->height / (double)ctx->c.line_height;
+	ctx->d.tex_pos
+		= (ctx->c.y_start - WIN_H / 2 + ctx->c.line_height / 2) * ctx->d.step;
 }
 
-static void find_ray_hit(t_data *data, t_ray *r)
+static void	render_column(t_data *data, int x, t_render_ctx *ctx)
 {
-    init_dda_vars(data, r);
-    r->hit = 0;
-    while (!r->hit)
-    {
-        if (r->side_dist_x < r->side_dist_y) // con k xocamos primero X o Y
-        {
-            r->side_dist_x += r->delta_dist_x;
-            r->map_x += r->step_x; // avanze
-            r->side = 0; // es horizontal 
-        }
-        else
-        {
-            r->side_dist_y += r->delta_dist_y;
-            r->map_y += r->step_y; // avnze
-            r->side = 1; // es vertical
-        }
-        if (r->map_y < 0 || r->map_y >= data->map.height
-            || r->map_x < 0 || r->map_x >= data->map.width)
-            break;
-        if (data->map.grid[r->map_y][r->map_x] == '1')
-            r->hit = 1;
-    }
-    // 1. Calculamos la posición exacta del impacto en el mundo 3D (Pitágoras puro)
-    if (r->side == 0)
-    {
-        // Si chocó contra una pared vertical (Este/Oeste), queremos saber su altura Y
-        r->wall_x = data->player.pos_y + (r->side_dist_x - r->delta_dist_x) * r->dir_y;
-    }
-    else
-    {
-        // Si chocó contra una pared horizontal (Norte/Sur), queremos saber su posición X
-        r->wall_x = data->player.pos_x + (r->side_dist_y - r->delta_dist_y) * r->dir_x;
-    }
-
-    // 2. Nos quedamos SOLO con la parte decimal (el porcentaje dentro de la baldosa)
-    r->wall_x = r->wall_x - floor(r->wall_x);
+	ctx->c.y = ctx->c.y_start;
+	if (ctx->c.y < 0)
+	{
+		ctx->d.tex_pos += ctx->d.step * (-ctx->c.y);
+		ctx->c.y = 0;
+	}
+	if (ctx->c.y_end > WIN_H)
+		ctx->c.y_end = WIN_H;
+	while (ctx->c.y < ctx->c.y_end)
+	{
+		// Caalculo de tex_y:
+		ctx->d.tex_y = (int)ctx->d.tex_pos;
+		if (ctx->d.tex_y < 0)
+			ctx->d.tex_y = 0;
+		if (ctx->d.tex_y >= ctx->d.tex->height)
+			ctx->d.tex_y = ctx->d.tex->height - 1;
+		ctx->d.color = get_texture_pixel(ctx->d.tex,
+				ctx->d.tex_x, ctx->d.tex_y);
+		// Sombrea paredes verticales
+		if (ctx->r.side == 1)
+			ctx->d.color = (ctx->d.color >> 1) & 0x7F7F7F;
+		buffer_put_pixel(&data->mlx, x, ctx->c.y, ctx->d.color);
+		ctx->d.tex_pos += ctx->d.step;
+		ctx->c.y++;
+	}
 }
 
-static t_texture *select_wall_texture(t_data *data, t_ray *r)
+void	draw_column(t_data *data, int x, double dir_angle)
 {
-    if (r->side == 0)
-    {
-        if (r->dir_x > 0)
-            return (&data->tex_img_ea);
-        return (&data->tex_img_we);
-    }
-    if (r->dir_y > 0)
-        return (&data->tex_img_so);
-    return (&data->tex_img_no);
+	t_render_ctx	ctx;
+
+	memset(&ctx, 0, sizeof(ctx));
+	calc_ray_and_distance(data, &ctx, x, dir_angle);
+	calc_projection_and_texture(data, &ctx);
+	render_column(data, x, &ctx);
 }
 
-
-void draw_column(t_data *data, int x, double dir_angle)
+void	draw(t_data *data)
 {
-    t_col       c;
-    t_ray       r;
-    t_draw_data d;
+	int	x;
 
-    // 1. Inicialización del Rayo
-    c.percent = (double)x / (double)WIN_W;
-    c.ray_angle = dir_angle - (FOV / 2.0) + c.percent * FOV;
-    r.dir_x = cos(c.ray_angle);
-    r.dir_y = sin(c.ray_angle);
-
-    // 2. Ejecución de la Física (DDA)
-    find_ray_hit(data, &r);
-    c.dist = (r.side == 0) ? (r.side_dist_x - r.delta_dist_x) : (r.side_dist_y - r.delta_dist_y);
-
-    // 3. Proyección de la Columna (Pantalla)
-    c.dist = c.dist * cos(c.ray_angle - dir_angle);
-    if (c.dist < 0.00001)
-        c.dist = 0.00001;
-    c.line_height = (int)(WIN_H / c.dist);
-    c.y_start = WIN_H / 2 - c.line_height / 2;
-    c.y_end = WIN_H / 2 + c.line_height / 2;
-
-    // 4. Configuración del Mapeo de Texturas
-    d.tex = select_wall_texture(data, &r);
-    d.tex_x = (int)(r.wall_x * (double)d.tex->width);
-    if ((r.side == 0 && r.dir_x > 0) || (r.side == 1 && r.dir_y < 0))
-        d.tex_x = d.tex->width - d.tex_x - 1;
-    d.step = (double)d.tex->height / (double)c.line_height;
-    d.tex_pos = (c.y_start - WIN_H / 2 + c.line_height / 2) * d.step;
-
-    // 5. Ajuste y Renderizado Vertical
-    c.y = c.y_start;
-    if (c.y < 0)
-    {
-        d.tex_pos += d.step * (-c.y);
-        c.y = 0;
-    }
-    if (c.y_end > WIN_H)
-        c.y_end = WIN_H;
-    while (c.y < c.y_end)
-    {
-        d.tex_y = (int)d.tex_pos & (d.tex->height - 1);
-        d.color = get_texture_pixel(d.tex, d.tex_x, d.tex_y);
-        if (r.side == 1)
-            d.color = (d.color >> 1) & 0x7F7F7F;
-        buffer_put_pixel(&data->mlx, x, c.y, d.color);
-        d.tex_pos += d.step;
-        c.y++;
-    }
+	x = 0;
+	while (x < WIN_W)
+	{
+		draw_column(data, x, data->player.angle);
+		x++;
+	}
 }
-
-*/
-
-
-/* 
-final version right order --------------->>>>
-// ... (Tus structs s_ray y s_draw_data e init_dda_vars se quedan igual arriba)
-
-static void init_dda_vars(t_data *data, t_ray *r)
-{
-    // -------------------------------------------------------------
-    // STEP 1: CALCULAR EL "PRECIO EN DIAGONAL" DE CADA EJE (DELTA)
-    // -------------------------------------------------------------
-    // ¿El rayo se mueve en horizontal?
-    if (r->dir_x == 0)
-    {
-        r->delta_dist_x = 1e30; // Si va recto vertical, nunca cruza líneas en X (precio infinito)
-    }
-    else
-    {
-        r->delta_dist_x = fabs(1.0 / r->dir_x); // Hipotenusa para cruzar 1 bloque entero de X
-    }
-
-    // ¿El rayo se mueve en vertical?
-    if (r->dir_y == 0)
-    {
-        r->delta_dist_y = 1e30; // Si va recto horizontal, nunca cruza líneas en Y (precio infinito)
-    }
-    else
-    {
-        r->delta_dist_y = fabs(1.0 / r->dir_y); // Hipotenusa para cruzar 1 bloque entero de Y
-    }
-
-    // -------------------------------------------------------------
-    // STEP 2: LOCALIZAR LA BALDOSA INICIAL EN LA MATRIZ (ENTEROS)
-    // -------------------------------------------------------------
-    r->map_x = (int)data->player.pos_x; // Truncamos los decimales del jugador
-    r->map_y = (int)data->player.pos_y; // Ejemplo: 3.45 se convierte en la casilla 3
-
-    // -------------------------------------------------------------
-    // STEP 3: CALCULAR EL PRIMER SALTO EN EL EJE X (HORIZONTALES)
-    // -------------------------------------------------------------
-    if (r->dir_x < 0)
-    {
-        r->step_x = -1; // El rayo va a la izquierda (restamos columnas en la matriz)
-        
-        // Distancia horizontal desde el jugador hasta la línea de ATRÁS,
-        // multiplicada por el precio diagonal
-        r->side_dist_x = (data->player.pos_x - r->map_x) * r->delta_dist_x;
-    }
-    else
-    {
-        r->step_x = 1; // El rayo va a la derecha (sumamos columnas en la matriz)
-        
-        // Distancia horizontal desde el jugador hasta la línea de DELANTE,
-        // multiplicada por el precio diagonal
-        r->side_dist_x = (r->map_x + 1.0 - data->player.pos_x) * r->delta_dist_x;
-    }
-
-    // -------------------------------------------------------------
-    // STEP 4: CALCULAR EL PRIMER SALTO EN EL EJE Y (VERTICALES)
-    // -------------------------------------------------------------
-    if (r->dir_y < 0)
-    {
-        r->step_y = -1; // El rayo va hacia arriba (Norte, restamos filas en la matriz)
-        
-        // Distancia vertical desde el jugador hasta la línea de ARRIBA,
-        // multiplicada por el precio diagonal
-        r->side_dist_y = (data->player.pos_y - r->map_y) * r->delta_dist_y;
-    }
-    else
-    {
-        r->step_y = 1; // El rayo va hacia abajo (Sur, sumamos filas en la matriz)
-        
-        // Distancia vertical desde el jugador hasta la línea de ABAJO,
-        // multiplicada por el precio diagonal
-        r->side_dist_y = (r->map_y + 1.0 - data->player.pos_y) * r->delta_dist_y;
-    }
-}
-
-
-static void find_ray_hit(t_data *data, t_ray *r)
-{
-    init_dda_vars(data, r);
-    r->hit = 0;
-    while (!r->hit)
-    {
-        if (r->side_dist_x < r->side_dist_y) // ¿Con qué chocamos primero, línea X o Y?
-        {
-            r->side_dist_x += r->delta_dist_x;
-            r->map_x += r->step_x; // Avance en columnas
-            r->side = 0;           // Impacto en pared vertical (Este/Oeste)
-        }
-        else
-        {
-            r->side_dist_y += r->delta_dist_y;
-            r->map_y += r->step_y; // Avance en filas
-            r->side = 1;           // Impacto en pared horizontal (Norte/Sur)
-        }
-        if (r->map_y < 0 || r->map_y >= data->map.height
-            || r->map_x < 0 || r->map_x >= data->map.width)
-            break;
-        if (data->map.grid[r->map_y][r->map_x] == '1')
-            r->hit = 1;
-    }
-    // 1. Calculamos la posición exacta del impacto en el mundo 3D (Pitágoras puro)
-    if (r->side == 0)
-        r->wall_x = data->player.pos_y + (r->side_dist_x - r->delta_dist_x) * r->dir_y;
-    else
-        r->wall_x = data->player.pos_x + (r->side_dist_y - r->delta_dist_y) * r->dir_x;
-
-    // 2. Nos quedamos SOLO con la parte decimal (el porcentaje dentro de la baldosa)
-    r->wall_x = r->wall_x - floor(r->wall_x);
-}
-
-static t_texture *select_wall_texture(t_data *data, t_ray *r)
-{
-    if (r->side == 0)
-    {
-        if (r->dir_x > 0)
-            return (&data->tex_img_ea);
-        return (&data->tex_img_we);
-    }
-    if (r->dir_y > 0)
-        return (&data->tex_img_so);
-    return (&data->tex_img_no);
-}
-
-// CAMBIO DE ORDEN: Ponemos render_ray AQUÍ para que draw_column la conozca al compilar
-static void render_ray(t_data *data, int x, t_col *c, t_ray *r, t_draw_data *d)
-{
-    // 1. Ajuste del límite superior (Si el muro se sale por arriba de la pantalla)
-    c->y = c->y_start;
-    if (c->y < 0)
-    {
-        d->tex_pos += d->step * (-c->y);
-        c->y = 0;
-    }
-    
-    // 2. Ajuste del límite inferior (Si el muro se sale por abajo de la pantalla)
-    if (c->y_end > WIN_H)
-        c->y_end = WIN_H;
-        
-    // 3. El bucle vertical de pintado píxel a píxel
-    while (c->y < c->y_end)
-    {
-        // Calculamos la fila exacta de la textura (con el truco binario anti-SegFault)
-        d->tex_y = (int)d->tex_pos & (d->tex->height - 1);
-        
-        // Extraemos el color del archivo XPM
-        d->color = get_texture_pixel(d->tex, d->tex_x, d->tex_y);
-        
-        // Si es cara Norte/Sur (side == 1), aplicamos la sombra longitudinal
-        if (r->side == 1)
-            d->color = (d->color >> 1) & 0x7F7F7F;
-            
-        // Pintamos el píxel en el buffer de la MLX
-        buffer_put_pixel(&data->mlx, x, c->y, d->color);
-        
-        // Avanzamos en la textura y bajamos un píxel en la pantalla
-        d->tex_pos += d->step;
-        c->y++;
-    }
-}
-
-void draw_column(t_data *data, int x, double dir_angle)
-{
-    t_col       c;
-    t_ray       r;
-    t_draw_data d;
-
-    // 1. INICIALIZACIÓN DEL RAYO (ÁNGULO Y DIRECCIÓN)
-    c.percent = (double)x / (double)WIN_W;
-    c.ray_angle = dir_angle - (FOV / 2.0) + c.percent * FOV;
-    r.dir_x = cos(c.ray_angle);
-    r.dir_y = sin(c.ray_angle);
-
-    // 2. EJECUCIÓN DE LA FÍSICA (DDA) Y DISTANCIA REAL
-    find_ray_hit(data, &r);
-    if (r.side == 0)
-        c.dist = r.side_dist_x - r.delta_dist_x;
-    else
-        c.dist = r.side_dist_y - r.delta_dist_y; // Resto delta para volver a la cara del muro
-
-    // 3. PROYECCIÓN DE LA COLUMNA (CÁLCULO DEL TAMAÑO EN PANTALLA)
-    c.dist = c.dist * cos(c.ray_angle - dir_angle);
-    if (c.dist < 0.00001)
-        c.dist = 0.00001;
-    c.line_height = (int)(WIN_H / c.dist);
-    c.y_start = WIN_H / 2 - c.line_height / 2;
-    c.y_end = WIN_H / 2 + c.line_height / 2;
-
-    // 4. CONFIGURACIÓN DEL MAPEO DE TEXTURAS
-    d.tex = select_wall_texture(data, &r);
-    d.tex_x = (int)(r.wall_x * (double)d.tex->width);
-    if ((r.side == 0 && r.dir_x > 0) || (r.side == 1 && r.dir_y < 0))
-        d.tex_x = d.tex->width - d.tex_x - 1;
-    d.step = (double)d.tex->height / (double)c.line_height;
-    d.tex_pos = (c.y_start - WIN_H / 2 + c.line_height / 2) * d.step;
-
-    // 5. Ajuste y Renderizado Vertical (Llamada limpia)
-    render_ray(data, x, &c, &r, &d);
-}
-*/
