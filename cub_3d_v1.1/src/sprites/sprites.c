@@ -1,10 +1,9 @@
 
 #include "cub_3d.h"
 
-
-void draw_explosion_in_buffer(t_data *data)
+void	draw_explosion_in_buffer(t_data *data)
 {
-	t_explosion_helper v;
+	t_explosion_helper	v;
 
 	if (!data->explosion.active
 		|| data->explosion.frame < 0
@@ -30,10 +29,10 @@ void draw_explosion_in_buffer(t_data *data)
 	}
 }
 
-void update_explosion_anim(t_data *data)
+void	update_explosion_anim(t_data *data)
 {
 	if (!data->explosion.active)
-		return;
+		return ;
 	data->explosion.tick++;
 	if (data->explosion.tick > data->explosion.delay)
 	{
@@ -41,8 +40,8 @@ void update_explosion_anim(t_data *data)
 		data->explosion.frame++;
 		if (data->explosion.frame >= SPRITE_FRAMES)
 		{
-			data->explosion.active = 0; // termina la animación
-			data->explosion.frame = 0;  // vuelve al frame 0 por seguridad
+			data->explosion.active = 0;// termina la animmacion
+			data->explosion.frame = 0;// vuelveemos al frame 0 por seguridad
 		}
 	}
 }

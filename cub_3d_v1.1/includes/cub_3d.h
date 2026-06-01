@@ -92,6 +92,15 @@ typedef struct s_player
 } t_player;
 
 //_____ Minimaap____
+
+typedef struct s_cell
+{
+	int x;
+	int y;
+	int tile;
+	int color;
+}	t_cell;
+
 typedef struct s_minimap
 {
     int tile;
