@@ -1,4 +1,3 @@
-
 #include "cub_3d.h"
 
 int	check_elements(t_data *data)
@@ -29,7 +28,7 @@ int	check_all_floors_closed(t_data *data)
 			if (data->map.grid[row][col] == '0')
 			{
 				if (is_open_floor(data, row, col))
-					return (print_error("El mapa contiene espacios internos inválidos"));
+					return (print_error("Espacios internos inválidos"));
 			}
 			col++;
 		}
@@ -46,7 +45,8 @@ int	check_walls(t_data *data)
 	tmp_grid = duplicate_matrix(data->map.grid, data->map.height);
 	if (!tmp_grid)
 		return (print_error("Malloc error al duplicar mapa de validación"));
-	is_open = flood_fill(tmp_grid, (int)data->player.pos_x, (int)data->player.pos_y, data);
+	is_open = flood_fill(tmp_grid,
+			(int)data->player.pos_x, (int)data->player.pos_y, data);
 	free_matrix(tmp_grid, data->map.height);
 	if (is_open)
 		return (print_error("El mapa está abierto. No rodeado por muros"));

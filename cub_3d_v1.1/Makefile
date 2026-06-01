@@ -39,6 +39,7 @@ SRCS        =   $(SRC_DIR)/parser/parser.c \
                 $(SRC_DIR)/parser/parser_config_textures.c \
                 $(SRC_DIR)/parser/parser_config_colors.c \
                 $(SRC_DIR)/parser/init.c \
+				$(SRC_DIR)/parser/init_helpers.c \
 				$(SRC_DIR)/graphics/textures.c \
                 $(SRC_DIR)/graphics/init_graphics.c \
                 $(SRC_DIR)/graphics/render.c \
@@ -53,7 +54,10 @@ SRCS        =   $(SRC_DIR)/parser/parser.c \
 				$(SRC_DIR)/utils/utils_parser.c \
 				$(SRC_DIR)/utils/utils_validate.c \
                 $(SRC_DIR)/utils/error.c \
+				$(SRC_DIR)/utils/free_data.c \
+				$(SRC_DIR)/utils/free_graphics.c \
                 $(SRC_DIR)/gnl/get_next_line.c \
+				$(SRC_DIR)/gnl/gnl_helpers.c \
                 $(SRC_DIR)/main.c
 
 OBJS        = $(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.o, $(SRCS))

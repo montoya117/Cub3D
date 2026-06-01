@@ -1,4 +1,3 @@
-
 #include "cub_3d.h"
 
 int	load_one_texture(t_data *data, t_texture *tex, char *path)

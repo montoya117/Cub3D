@@ -1,13 +1,8 @@
-
 #include "cub_3d.h"
 
-/*
-	Utilidades de matrices (Gestión del Heap)
-
-*/
-void    free_matrix(char **matrix, int  height)
+void	free_matrix(char **matrix, int height)
 {
-	int i;
+	int	i;
 
 	if (!matrix)
 		return ;
@@ -20,16 +15,12 @@ void    free_matrix(char **matrix, int  height)
 	free(matrix);
 }
 
-/*
-FUNCIÓN duplicate_matrix(src_matrix, height):
-*/
-
 char	**duplicate_matrix(char **src_matrix, int height)
 {
-	char    **dest_matrix;
-	int     i;
+	char	**dest_matrix;
+	int		i;
 
-	dest_matrix = malloc((height + 1 ) * sizeof(char *));
+	dest_matrix = malloc((height + 1) * sizeof(char *));
 	if (!dest_matrix)
 		return (NULL);
 	i = 0;
@@ -39,7 +30,7 @@ char	**duplicate_matrix(char **src_matrix, int height)
 		if (!dest_matrix[i])
 		{
 			free_matrix(dest_matrix, i);
-			return(NULL);
+			return (NULL);
 		}
 		i++;
 	}

@@ -245,10 +245,23 @@ typedef struct s_data
 
 // ** FUNCTIONS **s
 
+// ** GNL **
+char	*get_next_line(int fd);
+
+// ** GNL_HELPERS.C **
+char	*gnl_init_stash(char *stash);
+char	*gnl_join_and_free(char *stash, char *buffer);
+
 // ** PARSER **
 
 // ** INIT.C **
 void    init_data(t_data *data);
+
+// ** INIT_HELPERS.C **
+void	init_map(t_map *map);
+void	init_player(t_player *player);
+void	init_texture(t_texture *tex);
+void	init_mlx(t_mlx *mlx);
 
 // ** PARSER.C **
 int     check_extension(char *str);
@@ -285,10 +298,22 @@ int     flood_fill(char **tmp_grid, int col, int row, t_data *data);
 int     is_str_digit(char *str);
 int		is_texture_line(char *line);
 int		is_color_line(char *line);
+void	fill_normalized_row(char *dst, char *src, int width);
 
 // ** UTILS_VALIDATE.C **
 void    free_matrix(char **matrix, int  height);
 char	**duplicate_matrix(char **src_matrix, int height);
+
+// ** ERROR.C **
+int     print_error(char *str);
+void    free_map_list(t_list *map_list);
+
+// ** FREE_DATA.C **
+void    free_array(char **array);
+void	free_data(t_data *data);
+
+// ** FREE_GRAPHICS.C **
+void    free_graphics(t_data *data);
 
 // ** TEXTURES.C **
 int     load_one_texture(t_data *data, t_texture *tex, char *path);
@@ -299,7 +324,6 @@ int     get_texture_pixel(t_texture *tex, int x, int y);
 void		init_ray_base(t_ray *r);
 void		init_dda_vars(t_data *data, t_ray *r);
 t_texture	*select_wall_texture(t_data *data, t_ray *r);
-// void		init_draw_data(t_data *data, t_draw_data *d, t_ray *r, t_col *c);
 
 //INIT_GRAPHICS.C
 int     init_graphics(t_data *data);
@@ -336,15 +360,5 @@ void    buffer_put_pixel(t_mlx *mlx, int x, int y, int color);
 void    clear_img_buffer(t_mlx *mlx);
 //DRAW_MINIMAP.C
 void    draw_minimap_buffer(t_data *data);
-
-// ** ERROR.C **
-int     print_error(char *str);
-void    free_array(char **array);
-void	free_data(t_data *data);
-void    free_map_list(t_list *map_list);
-void    free_graphics(t_data *data);
-
-// ** GNL **
-char	*get_next_line(int fd);
 
 #endif

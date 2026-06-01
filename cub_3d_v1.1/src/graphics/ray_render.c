@@ -1,4 +1,3 @@
-
 #include "cub_3d.h"
 
 void	init_ray_base(t_ray *r)
