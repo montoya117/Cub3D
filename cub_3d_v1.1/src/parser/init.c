@@ -1,14 +1,13 @@
-
 #include "cub_3d.h"
 
-static void    init_map(t_map *map)
+static void	init_map(t_map *map)
 {
 	map->grid = NULL;
 	map->width = 0;
 	map->height = 0;
 }
 
-static void init_player(t_player *player)
+static void	init_player(t_player *player)
 {
 	player->pos_x = 0;
 	player->pos_y = 0;
@@ -16,7 +15,7 @@ static void init_player(t_player *player)
 	player->angle = 0.0;
 }
 
-static void init_texture(t_texture *tex)
+static void	init_texture(t_texture *tex)
 {
 	tex->img = NULL;
 	tex->addr = NULL;
@@ -27,7 +26,7 @@ static void init_texture(t_texture *tex)
 	tex->endian = 0;
 }
 
-static void init_mlx(t_mlx *mlx)
+static void	init_mlx(t_mlx *mlx)
 {
 	mlx->mlx_ptr = NULL;
 	mlx->win_ptr = NULL;
@@ -38,7 +37,7 @@ static void init_mlx(t_mlx *mlx)
 	mlx->endian = 0;
 }
 
-void    init_data(t_data *data)
+static void	init_parser_and_keys(t_data *data)
 {
 	data->tex_path_no = NULL;
 	data->tex_path_so = NULL;
@@ -55,6 +54,10 @@ void    init_data(t_data *data)
 	data->key_d = 0;
 	data->key_left = 0;
 	data->key_right = 0;
+}
+
+static void	init_sprites_and_explosion(t_data *data)
+{
 	data->explosion.active = 0;
 	data->explosion.frame = 0;
 	data->explosion.x = 0;
@@ -65,7 +68,12 @@ void    init_data(t_data *data)
 	data->sprite_h = 0;
 	data->explosion.sprite_w = 0;
 	data->explosion.sprite_h = 0;
+}
 
+void	init_data(t_data *data)
+{
+	init_parser_and_keys(data);
+	init_sprites_and_explosion(data);
 	init_texture(&data->tex_img_no);
 	init_texture(&data->tex_img_so);
 	init_texture(&data->tex_img_we);

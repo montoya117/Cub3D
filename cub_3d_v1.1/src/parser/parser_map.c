@@ -23,7 +23,7 @@ int is_map_line(char *line)
 	i = 0;
 	while (line[i] != '\0')
 	{
-		if (line[i] != ' '  && line[i] != '0' && line[i] != '1' && line[i] != 'N' && line[i] != 'S' && line[i] != 'E' && line[i] != 'W')
+		if (line[i] != ' ' && line[i] != '0' && line[i] != '1' && line[i] != 'N' && line[i] != 'S' && line[i] != 'E' && line[i] != 'W')
 			return (0);
 		i++;
 	}

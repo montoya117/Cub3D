@@ -12,18 +12,32 @@
 
 #include "cub_3d.h"
 
+static char	*init_stash(char *stash)
+{
+	if (!stash)
+		return (ft_strdup(""));
+	return (stash);
+}
+
+static char	*join_and_free(char *stash, char *buffer)
+{
+	char	*temp;
+
+	temp = ft_strjoin(stash, buffer);
+	free(stash);
+	return (temp);
+}
+
 static char	*read_and_append(int fd, char *stash)
 {
 	char	buffer[BUFFER_SIZE + 1];
-	char	*temp;
 	ssize_t	bytes_read;
 
+	stash = init_stash(stash);
 	if (!stash)
-		stash = ft_strdup("");
-	if (!stash)
-		stash = NULL;
+		return (NULL);
 	bytes_read = 1;
-	while (!(ft_strchr(stash, '\n')) && bytes_read != 0)
+	while (!ft_strchr(stash, '\n') && bytes_read > 0)
 	{
 		bytes_read = read(fd, buffer, BUFFER_SIZE);
 		if (bytes_read < 0)
@@ -31,12 +45,9 @@ static char	*read_and_append(int fd, char *stash)
 			free(stash);
 			return (NULL);
 		}
-		if (bytes_read == 0)
-			break ;
 		buffer[bytes_read] = '\0';
-		temp = ft_strjoin(stash, buffer);
-		free(stash);
-		stash = temp;
+		if (bytes_read > 0)
+			stash = join_and_free(stash, buffer);
 		if (!stash)
 			return (NULL);
 	}
@@ -113,4 +124,3 @@ char	*get_next_line(int fd)
 	}
 	return (line);
 }
-

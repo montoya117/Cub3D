@@ -269,10 +269,12 @@ int     convert_list_to_array(t_data *data);
 
 // ** VALIDATE.C **
 int     check_elements(t_data *data);
-int     check_player(t_data *data);
 int     check_walls(t_data *data);
 int     check_all_floors_closed(t_data *data);
 int     validate_elements_and_map(t_data *data);
+
+// ** VALIDATE_PLAYER.C **
+int     check_player(t_data *data);
 
 // ** VALIDATE_HELPERS.C **
 int     is_open_floor(t_data *data, int row, int col);
@@ -281,6 +283,8 @@ int     flood_fill(char **tmp_grid, int col, int row, t_data *data);
 // ** UTILS **
 // ** UTILS_PARSER.C **
 int     is_str_digit(char *str);
+int		is_texture_line(char *line);
+int		is_color_line(char *line);
 
 // ** UTILS_VALIDATE.C **
 void    free_matrix(char **matrix, int  height);
