@@ -90,17 +90,11 @@ clean:
 
 # Clean everything
 fclean: clean
-	@echo "$(BOLD_YELLOW)Removing $(NAME) and test executables...$(RESET)"
-	@rm -f $(NAME) libft_test libft_test_bonus
+	@echo "$(BOLD_YELLOW)Removing $(NAME)$(RESET)"
+	@rm -f $(NAME)
 	@echo "$(BOLD_GREEN)✅ Full clean completed!$(RESET)"
 
 # Rebuild
 re: fclean all
 
-# Optional test rules
-test: $(OBJS) $(OBJS_B)
-	@echo "$(SOFT_BLUE)Building test executable with bonus...$(RESET)"
-	$(CC) $(CFLAGS) -Iincludes tests/test.c $(OBJS) $(OBJS_B) -o libft_test
-	@echo "$(BOLD_GREEN)✅ libft_test executable ready!$(RESET)"
-
-.PHONY: all clean fclean re bonus test
+.PHONY: all clean fclean re bonus
