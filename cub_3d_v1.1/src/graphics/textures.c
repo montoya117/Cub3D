@@ -1,14 +1,23 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   textures.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: jadelgad <jadelgad@student.42barcelon      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/06/03 11:22:08 by jadelgad          #+#    #+#             */
+/*   Updated: 2026/06/03 11:22:10 by jadelgad         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "cub_3d.h"
 
 int	load_one_texture(t_data *data, t_texture *tex, char *path)
 {
-	// 1. Seguridad: Si la ruta no existe porque el parser falló, salimos
 	if (!path)
 		return (print_error("La ruta de la textura es NULL (Fallo de parser)"));
-	// 2. Intentamos cargar con la MLX
 	tex->img = mlx_xpm_file_to_image(data->mlx.mlx_ptr, path,
 			&tex->width, &tex->height);
-	// 3. Si el archivo no existe en el disco o está corrupto
 	if (!tex->img)
 	{
 		ft_putstr_fd("Ruta problemática: ", 2);
@@ -16,7 +25,6 @@ int	load_one_texture(t_data *data, t_texture *tex, char *path)
 		ft_putstr_fd("\n", 2);
 		return (print_error("No se pudo cargar el archivo XPM."));
 	}
-	// 4. Si todo va bien, pillamos la dirección de memoria
 	tex->addr = mlx_get_data_addr(tex->img, &tex->bpp,
 			&tex->line_len, &tex->endian);
 	if (!tex->addr)

@@ -1,3 +1,14 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   buffer_utils.c                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: jadelgad <jadelgad@student.42barcelon      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/06/03 11:20:37 by jadelgad          #+#    #+#             */
+/*   Updated: 2026/06/03 11:20:55 by jadelgad         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 #include "cub_3d.h"
 
@@ -10,10 +21,6 @@ void	buffer_put_pixel(t_mlx *mlx, int x, int y, int color)
 	pos = (y * mlx->size_line) + (x * (mlx->bpp / 8));
 	*(unsigned int *)(mlx->img_data + pos) = color;
 }
-	/*para saber en que byte esta el pixel:
-	cada linea ocupa mlx->sizebytes y cada pixelw mlx->bpp/8
-	la pos final es:
-	(bytes hasta la fila y) + (bytes en la comuna x en esta fila)*/
 
 void	clear_img_buffer(t_mlx *mlx)
 {

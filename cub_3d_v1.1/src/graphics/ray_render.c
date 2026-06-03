@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ray_render.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: jadelgad <jadelgad@student.42barcelon      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/06/03 11:21:44 by jadelgad          #+#    #+#             */
+/*   Updated: 2026/06/03 11:21:46 by jadelgad         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "cub_3d.h"
 
 void	init_ray_base(t_ray *r)
@@ -29,7 +41,6 @@ static void	set_delta_dist(t_ray *r)
 		r->delta_dist_y = fabs(1.0 / r->dir_y);
 }
 
-// inicializa pasos y distancias laterales para DDA
 static void	set_steps_and_side_dists(t_data *data, t_ray *r)
 {
 	if (r->dir_x < 0)
@@ -58,41 +69,21 @@ static void	set_steps_and_side_dists(t_data *data, t_ray *r)
 
 void	init_dda_vars(t_data *data, t_ray *r)
 {
-	// 1. Calcula laas deltas
 	set_delta_dist(r);
-	// 2. Inicializa casilla del mapa donde empieza el rayo
 	r->map_x = (int)data->player.pos_x;
 	r->map_y = (int)data->player.pos_y;
-	// 3. Calcula pasos e inicializa distancias laterales
 	set_steps_and_side_dists(data, r);
 }
 
 t_texture	*select_wall_texture(t_data *data, t_ray *r)
 {
-	if (r->side == 0) // es pared horizontal X
+	if (r->side == 0)
 	{
 		if (r->dir_x > 0)
 			return (&data->tex_img_ea);
 		return (&data->tex_img_we);
 	}
-	if (r->dir_y > 0) // es pared vertical Y
+	if (r->dir_y > 0)
 		return (&data->tex_img_so);
 	return (&data->tex_img_no);
 }
-
-/*
----> refactorizacion draw_column
-void init_draw_data(t_data *data, t_draw_data *d, t_ray *r, t_col *c)
-{
-	d->tex = select_wall_texture(data, r);
-	d->tex_x = (int)(r->wall_x * (double)d->tex->width);
-	if ((r->side == 0 && r->dir_x > 0) || (r->side == 1 && r->dir_y < 0))
-	{
-		d->tex_x = d->tex->width - d->tex_x - 1;
-	}
-	d->step = (double)d->tex->height / (double)c->line_height;
-	d->tex_pos = (c->y_start - WIN_H / 2 + c->line_height / 2) * d->step;
-	d->color = 0;
-}
-
-*/

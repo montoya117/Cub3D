@@ -1,9 +1,16 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   move.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: jadelgad <jadelgad@student.42barcelon      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/06/03 11:36:26 by jadelgad          #+#    #+#             */
+/*   Updated: 2026/06/03 11:36:37 by jadelgad         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 #include "cub_3d.h"
-
-#define PLAYER_RADIUS 0.05
-#define MOVE_SPEED 0.04   // Ajusta la velocidad 
-#define ROT_SPEED 0.04
 
 int	is_wall(double x, double y, t_data *data)
 {
@@ -16,10 +23,9 @@ int	is_wall(double x, double y, t_data *data)
 	if (ix < 0 || iy < 0 || ix >= data->map.width || iy >= data->map.height)
 		return (1);
 	cell = data->map.grid[iy][ix];
-	return (cell != '0'); // true si NO es suelo
+	return (cell != '0');
 }
 
-// Comprueba esquinas del círculo jugador
 int	can_move(double new_x, double new_y, t_data *data)
 {
 	double	r;
@@ -52,59 +58,16 @@ void	check_and_move(double new_x, double new_y, t_data *data)
 	}
 }
 
-// ---- FUNCIONES SEPARADAS PARA GIRO Y MOVIMIENTO ----
 void	rotate_player(int keycode, t_data *data)
 {
 	if (keycode == KEY_LEFT)
 		data->player.angle -= ROT_SPEED;
 	else if (keycode == KEY_RIGHT)
 		data->player.angle += ROT_SPEED;
-	// si iel angulo supera pi o -pi, lo reseta para evitar errores
 	if (data->player.angle > M_PI)
 		data->player.angle -= 2 * M_PI;
 	if (data->player.angle < -M_PI)
 		data->player.angle += 2 * M_PI;
-}
-
-static void	move_forward_backward(int keycode, t_data *data)
-{
-	double	dx;
-	double	dy;
-
-	dx = 0;
-	dy = 0;
-	if (keycode == KEY_W)
-	{
-		dx = cos(data->player.angle) * MOVE_SPEED;
-		dy = sin(data->player.angle) * MOVE_SPEED;
-	}
-	else if (keycode == KEY_S)
-	{
-		dx = -cos(data->player.angle) * MOVE_SPEED;
-		dy = -sin(data->player.angle) * MOVE_SPEED;
-	}
-	check_and_move(data->player.pos_x + dx, data->player.pos_y + dy, data);
-}
-
-// Movimiento lateral
-static void	move_sideways(int keycode, t_data *data)
-{
-	double	dx;
-	double	dy;
-
-	dx = 0;
-	dy = 0;
-	if (keycode == KEY_A)
-	{
-		dx = sin(data->player.angle) * MOVE_SPEED;
-		dy = -cos(data->player.angle) * MOVE_SPEED;
-	}
-	else if (keycode == KEY_D)
-	{
-		dx = -sin(data->player.angle) * MOVE_SPEED;
-		dy = cos(data->player.angle) * MOVE_SPEED;
-	}
-	check_and_move(data->player.pos_x + dx, data->player.pos_y + dy, data);
 }
 
 void	move_player(int keycode, t_data *data)
@@ -114,10 +77,3 @@ void	move_player(int keycode, t_data *data)
 	else if (keycode == KEY_A || keycode == KEY_D)
 		move_sideways(keycode, data);
 }
-
-/*
-FORMULA UNIVERSAL PARA MOVER ALGO EN UNA DIRECCION EN UN PLANO
-
-	EJE X:  posiicion nueva = posicion vieja + cos(angulo) * velocidad
-	EJE Y:  posicion nueva = pos vieha + sin(angulo) * velocidaad
-*/

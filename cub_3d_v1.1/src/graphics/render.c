@@ -1,10 +1,21 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   render.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: jadelgad <jadelgad@student.42barcelon      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/06/03 11:21:54 by jadelgad          #+#    #+#             */
+/*   Updated: 2026/06/03 11:21:58 by jadelgad         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 #include "cub_3d.h"
 
 int	render(t_data *data)
 {
 	process_movement(data);
-	update_explosion_anim(data); // <- IMPORTANTE: llama SIEMPRE
+	update_explosion_anim(data);
 	clear_img_buffer(&data->mlx);
 	draw(data);
 	draw_explosion_in_buffer(data);

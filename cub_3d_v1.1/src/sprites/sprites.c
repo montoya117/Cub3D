@@ -1,3 +1,14 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   sprites.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: jadelgad <jadelgad@student.42barcelon      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/06/03 11:42:53 by jadelgad          #+#    #+#             */
+/*   Updated: 2026/06/03 11:42:57 by jadelgad         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 #include "cub_3d.h"
 
@@ -40,8 +51,8 @@ void	update_explosion_anim(t_data *data)
 		data->explosion.frame++;
 		if (data->explosion.frame >= SPRITE_FRAMES)
 		{
-			data->explosion.active = 0;// termina la animmacion
-			data->explosion.frame = 0;// vuelveemos al frame 0 por seguridad
+			data->explosion.active = 0;
+			data->explosion.frame = 0;
 		}
 	}
 }
