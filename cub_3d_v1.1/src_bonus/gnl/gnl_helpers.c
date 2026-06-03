@@ -1,23 +1,29 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   render.c                                           :+:      :+:    :+:   */
+/*   gnl_helpers.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jadelgad <jadelgad@student.42barcelon      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/06/03 11:21:54 by jadelgad          #+#    #+#             */
-/*   Updated: 2026/06/03 11:21:58 by jadelgad         ###   ########.fr       */
+/*   Created: 2026/06/03 11:44:08 by jadelgad          #+#    #+#             */
+/*   Updated: 2026/06/03 11:44:10 by jadelgad         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub_3d.h"
 
-int	render(t_data *data)
+char	*gnl_init_stash(char *stash)
 {
-	process_movement(data);
-	clear_img_buffer(&data->mlx);
-	draw(data);
-	mlx_put_image_to_window(data->mlx.mlx_ptr,
-		data->mlx.win_ptr, data->mlx.img_ptr, 0, 0);
-	return (0);
+	if (!stash)
+		return (ft_strdup(""));
+	return (stash);
+}
+
+char	*gnl_join_and_free(char *stash, char *buffer)
+{
+	char	*temp;
+
+	temp = ft_strjoin(stash, buffer);
+	free(stash);
+	return (temp);
 }

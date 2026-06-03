@@ -336,6 +336,10 @@ void		draw_column(t_data *data, int x, double dir_angle);
 void		draw(t_data *data);
 
 void		find_ray_hit_position(t_data *data, t_ray *r);
+void		paint_ceiling(t_data *data, int x, int y_start);
+void		render_wall_stripe(t_data *data, int x, t_render_ctx *ctx);
+void		paint_floor(t_data *data, int x, int y_end);
+void		render_column(t_data *data, int x, t_render_ctx *ctx);
 
 void		buffer_put_pixel(t_mlx *mlx, int x, int y, int color);
 void		clear_img_buffer(t_mlx *mlx);

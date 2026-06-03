@@ -1,23 +1,39 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   render.c                                           :+:      :+:    :+:   */
+/*   error.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jadelgad <jadelgad@student.42barcelon      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/06/03 11:21:54 by jadelgad          #+#    #+#             */
-/*   Updated: 2026/06/03 11:21:58 by jadelgad         ###   ########.fr       */
+/*   Created: 2026/06/03 11:40:31 by jadelgad          #+#    #+#             */
+/*   Updated: 2026/06/03 11:40:37 by jadelgad         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub_3d.h"
 
-int	render(t_data *data)
+int	print_error(char *str)
 {
-	process_movement(data);
-	clear_img_buffer(&data->mlx);
-	draw(data);
-	mlx_put_image_to_window(data->mlx.mlx_ptr,
-		data->mlx.win_ptr, data->mlx.img_ptr, 0, 0);
-	return (0);
+	ft_putstr_fd("Error\n", 2);
+	if (str)
+	{
+		ft_putstr_fd(str, 2);
+		ft_putstr_fd("\n", 2);
+	}
+	return (1);
+}
+
+void	free_array(char **array)
+{
+	int	i;
+
+	if (!array)
+		return ;
+	i = 0;
+	while (array[i])
+	{
+		free(array[i]);
+		i++;
+	}
+	free(array);
 }
