@@ -1,0 +1,59 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   init.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: jadelgad <jadelgad@student.42barcelon      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/06/03 11:38:26 by jadelgad          #+#    #+#             */
+/*   Updated: 2026/06/03 11:38:30 by jadelgad         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "cub_3d.h"
+
+static void	init_parser_and_keys(t_data *data)
+{
+	data->tex_path_no = NULL;
+	data->tex_path_so = NULL;
+	data->tex_path_we = NULL;
+	data->tex_path_ea = NULL;
+	data->color_f = -1;
+	data->color_c = -1;
+	data->config_count = 0;
+	data->map_started = 0;
+	data->map_list = NULL;
+	data->key_w = 0;
+	data->key_a = 0;
+	data->key_s = 0;
+	data->key_d = 0;
+	data->key_left = 0;
+	data->key_right = 0;
+}
+
+static void	init_sprites_and_explosion(t_data *data)
+{
+	data->explosion.active = 0;
+	data->explosion.frame = 0;
+	data->explosion.x = 0;
+	data->explosion.y = 0;
+	data->explosion.delay = 0;
+	data->explosion.tick = 0;
+	data->sprite_w = 0;
+	data->sprite_h = 0;
+	data->explosion.sprite_w = 0;
+	data->explosion.sprite_h = 0;
+}
+
+void	init_data(t_data *data)
+{
+	init_parser_and_keys(data);
+	init_sprites_and_explosion(data);
+	init_texture(&data->tex_img_no);
+	init_texture(&data->tex_img_so);
+	init_texture(&data->tex_img_we);
+	init_texture(&data->tex_img_ea);
+	init_mlx(&data->mlx);
+	init_map(&data->map);
+	init_player(&data->player);
+}
