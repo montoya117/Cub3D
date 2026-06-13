@@ -6,7 +6,7 @@
 /*   By: jadelgad <jadelgad@student.42barcelon      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/03 11:22:08 by jadelgad          #+#    #+#             */
-/*   Updated: 2026/06/03 11:22:10 by jadelgad         ###   ########.fr       */
+/*   Updated: 2026/06/13 11:23:33 by alemonto         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,15 +16,17 @@ int	load_one_texture(t_data *data, t_texture *tex, char *path)
 {
 	if (!path)
 		return (print_error("NULL path, parser failure"));
-	tex->img = mlx_xpm_file_to_image(data->mlx.mlx_ptr, path,
-			&tex->width, &tex->height);
-	if (!tex->img)
+	if (access(path, F_OK | R_OK) != 0)
 	{
 		ft_putstr_fd("Wrong path: ", 2);
 		ft_putstr_fd(path, 2);
 		ft_putstr_fd("\n", 2);
-		return (print_error("XPM file could not be loaded"));
+		return (print_error("Texture file can't be loaded"));
 	}
+	tex->img = mlx_xpm_file_to_image(data->mlx.mlx_ptr, path,
+			&tex->width, &tex->height);
+	if (!tex->img)
+		return (print_error("XPM file could not be loaded"));
 	tex->addr = mlx_get_data_addr(tex->img, &tex->bpp,
 			&tex->line_len, &tex->endian);
 	if (!tex->addr)

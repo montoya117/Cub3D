@@ -58,6 +58,8 @@ BONUS_SRCS  =   $(SRC_DIR)/sprites/sprites.c \
 OBJS        = $(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.o, $(SRCS))
 OBJS_BONUS  = $(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.o, $(BONUS_SRCS))
 
+DEPS        = $(OBJS:.o=.d) $(OBJS_BONUS:.o=.d)
+
 all: $(LIBFT) $(MLX) $(NAME)
 
 $(LIBFT):
@@ -77,18 +79,17 @@ $(NAME): $(OBJS) Makefile
 	$(CC) $(CFLAGS) $(OBJS) $(LIBFT) $(MLX_FLAGS) -o $(NAME)
 	@echo "¡$(NAME) compilado Vamos!"
 
-$(NAME)_bonus: $(OBJS) $(OBJS_BONUS)
+$(NAME)_bonus: $(OBJS) $(OBJS_BONUS) Makefile
 	@echo "Linking $(NAME)_bonus..."
 	$(CC) $(CFLAGS) $(OBJS) $(OBJS_BONUS) $(LIBFT) $(MLX_FLAGS) -o $(NAME)_bonus
 	@echo "¡$(NAME)_bonus compilado Vamos!"
 
 
-$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c Makefile
 	@mkdir -p $(dir $@)
 	@echo "Compiling $<..."
 	@$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
-.PHONY: bonus
 bonus:
 	@echo "Preparing libraries for bonus build..."
 	@$(MAKE) -C $(LIBFT_DIR) OBJ_DIR=obj bonus
@@ -110,3 +111,5 @@ fclean: clean
 re: fclean all
 
 .PHONY: all clean fclean re bonus
+
+-include $(DEPS)
